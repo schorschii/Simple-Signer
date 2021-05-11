@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # *-* coding: utf-8 *-*
-import sys
+
+import sys, os
 import datetime
 import subprocess
+from shutil import which
 
 from cryptography.hazmat import backends
 from cryptography.hazmat.primitives.serialization import pkcs12
@@ -60,7 +62,7 @@ class SimpleSignerAboutWindow(QDialog):
 		self.setWindowTitle("About")
 
 class SimpleSignerMainWindow(QMainWindow):
-	PRODUCT_NAME      = 'Simple-Signer'
+	PRODUCT_NAME      = 'Simple Signer'
 	PRODUCT_VERSION   = '1.0.0'
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
 
@@ -149,7 +151,23 @@ class SimpleSignerMainWindow(QMainWindow):
 		if(fileName): self.txtCertPath.setText(fileName)
 
 	def OnClickOpenSigned(self, e):
-		cmd = ['libreoffice', self.getSignedPdfFileName()]
+		if self.existsBinary('libreoffice'): # LibreOffice displays signatures
+			cmd = ['libreoffice', self.getSignedPdfFileName()]
+		elif self.existsBinary('xdg-open'): # Linux fallback
+			cmd = ['xdg-open', self.getSignedPdfFileName()]
+		elif self.existsBinary('open'): # macOS
+			cmd = ['open', self.getSignedPdfFileName()]
+		res = subprocess.Popen(cmd, start_new_session=True)
+
+	def OnClickOpenSignedInFileManager(self, e):
+		if self.existsBinary('nemo'): # Linux Mint
+			cmd = ['nemo', self.getSignedPdfFileName()]
+		elif self.existsBinary('nautilus'): # Ubuntu
+			cmd = ['nautilus', self.getSignedPdfFileName()]
+		elif self.existsBinary('nautilus'): # Linux fallback
+			cmd = ['xdg-open', os.path.dirname(self.getSignedPdfFileName())]
+		elif self.existsBinary('open'): # macOS
+			cmd = ['open', os.path.dirname(self.getSignedPdfFileName())]
 		res = subprocess.Popen(cmd, start_new_session=True)
 
 	def OnReturnPressed(self):
@@ -186,9 +204,11 @@ class SimpleSignerMainWindow(QMainWindow):
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Information)
 				msg.setWindowTitle('😇')
-				msg.setText('Signed successfully as »'+self.getSignedPdfFileName()+'«.')
+				msg.setText('Successfully signed and saved as »'+self.getSignedPdfFileName()+'«.')
 				msg.setStandardButtons(QMessageBox.Ok)
-				btnOpen = msg.addButton('Open With LibreOffice', QMessageBox.ActionRole)
+				btnOpen = msg.addButton('Open Directory', QMessageBox.ActionRole)
+				btnOpen.clicked.connect(self.OnClickOpenSignedInFileManager)
+				btnOpen = msg.addButton('Open Signed PDF', QMessageBox.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSigned)
 				retval = msg.exec_()
 
@@ -202,6 +222,9 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def getSignedPdfFileName(self):
 		return self.txtPdfPath.text().replace(".pdf", "-signed.pdf")
+
+	def existsBinary(self, name):
+		return which(name) is not None
 
 def main():
 	app = QApplication(sys.argv)
