@@ -175,6 +175,10 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def OnClickSign(self, e):
 		try:
+			pdfPath = self.txtPdfPath.text()
+			signedPdfPath = self.getSignedPdfFileName()
+			if pdfPath == signedPdfPath: return
+
 			strDate = (datetime.datetime.utcnow() - datetime.timedelta(hours=12)).strftime("D:%Y%m%d%H%M%S+00'00'")
 			dct = {
 				"aligned": 0,
@@ -196,15 +200,15 @@ class SimpleSignerMainWindow(QMainWindow):
 			}
 			certData = open(self.txtCertPath.text(), "rb").read()
 			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
-			pdfData = open(self.txtPdfPath.text(), "rb").read()
+			pdfData = open(pdfPath, "rb").read()
 			signData = cms.sign(pdfData, dct, p12Data[0], p12Data[1], p12Data[2], "sha256")
-			with open(self.getSignedPdfFileName(), "wb") as fp:
+			with open(signedPdfPath, "wb") as fp:
 				fp.write(pdfData)
 				fp.write(signData)
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Information)
 				msg.setWindowTitle('😇')
-				msg.setText('Successfully signed and saved as »'+self.getSignedPdfFileName()+'«.')
+				msg.setText('Successfully signed and saved as »'+signedPdfPath+'«.')
 				msg.setStandardButtons(QMessageBox.Ok)
 				btnOpen = msg.addButton('Open Directory', QMessageBox.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSignedInFileManager)
@@ -221,7 +225,11 @@ class SimpleSignerMainWindow(QMainWindow):
 			retval = msg.exec_()
 
 	def getSignedPdfFileName(self):
-		return self.txtPdfPath.text().replace(".pdf", "-signed.pdf")
+		originalFileName = self.txtPdfPath.text()
+		if originalFileName.lower().endswith(".pdf"):
+			return originalFileName[:-4]+"-signed.pdf"
+		else:
+			return originalFileName+"-signed.pdf"
 
 	def existsBinary(self, name):
 		return which(name) is not None
