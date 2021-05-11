@@ -1,0 +1,9 @@
+[Nemo Action]
+Name=Sign PDF
+Quote=double
+Exec=<simple-signer.py %F>
+Icon-Name=application-pgp-signature
+Selection=NotNone
+Extensions=nodirs;
+Separator=/#/
+Extensions=pdf;
