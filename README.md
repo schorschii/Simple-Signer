@@ -1,4 +1,4 @@
-# Simple-Signer
+# Simple Signer
 Simple Signer allows you to sign PDF files using a simple GUI.
 
 ## But why?
@@ -9,7 +9,9 @@ On current Ubuntu versions, it is not possible to import personal certificates i
 apt install python3-pyqt5
 pip3 install endesive
 
-# move simple-signer.py and simple-signer.nemo_action into ~/.local/share/nemo/actions
+# move simple-signer.py into /usr/bin/simple-signer
+# move simple-signer.nemo_action into /usr/local/share/nemo/actions
+# move simple-signer.desktop into /usr/local/share/applications
 ```
 
 ## Usage
@@ -21,4 +23,4 @@ or
 
 then
 
-- Enter your certificate's passphrase and click "Sign!"
+- Enter the path to your certificate file and your certificate's passphrase, then click "Sign!"
