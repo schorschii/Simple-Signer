@@ -150,8 +150,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def OnClickOpenSigned(self, e):
 		cmd = ['libreoffice', self.getSignedPdfFileName()]
-		res = subprocess.run(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, universal_newlines=True)
-		if res.returncode != 0: raise Exception(' '.join(cmd)+' returned non-zero exit code '+str(res.returncode))
+		res = subprocess.Popen(cmd, start_new_session=True)
 
 	def OnReturnPressed(self):
 		self.OnClickSign(None)
