@@ -4,6 +4,8 @@
 import sys, os
 import datetime
 import subprocess
+import configparser
+from pathlib import Path
 from shutil import which
 
 from cryptography.hazmat import backends
@@ -52,7 +54,7 @@ class SimpleSignerAboutWindow(QDialog):
 			"""Simple-Signer allows you to to sign PDFs using a simple GUI.\n\n"""
 		)
 		labelDescription.setStyleSheet("opacity:0.8")
-		labelDescription.setFixedWidth(450)
+		#labelDescription.setFixedWidth(400)
 		labelDescription.setWordWrap(True)
 		self.layout.addWidget(labelDescription)
 
@@ -65,6 +67,8 @@ class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
 	PRODUCT_VERSION   = '1.0.0'
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
+
+	configPath = str(Path.home())+'/.simple-signer.ini'
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
@@ -80,7 +84,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		fileMenu.addSeparator()
 		quitAction = QAction('&Quit', self)
 		quitAction.setShortcut('Ctrl+Q')
-		quitAction.triggered.connect(self.OnQuit)
+		quitAction.triggered.connect(self.close)
 		fileMenu.addAction(quitAction)
 
 		# Help Menu
@@ -119,6 +123,9 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		self.btnSign = QPushButton('Sign!')
 		#self.btnSign.setEnabled(False)
+		boldFont = QFont()
+		boldFont.setBold(True)
+		self.btnSign.setFont(boldFont)
 		self.btnSign.clicked.connect(self.OnClickSign)
 		grid.addWidget(self.btnSign, 6, 0)
 
@@ -131,12 +138,24 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.setMinimumSize(400, 200)
 		self.setWindowTitle(self.PRODUCT_NAME+' v'+self.PRODUCT_VERSION)
 
-		# Defaults
+		# Defaults From Config File
+		if os.path.exists(self.configPath):
+			config = configparser.ConfigParser()
+			config.read(self.configPath)
+			self.txtCertPath.setText(config['settings']['cert-path'])
+
+		# Defaults From Command Line
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
 		if len(sys.argv) > 2: self.txtCertPath.setText(sys.argv[2])
 
-	def OnQuit(self, e):
-		sys.exit()
+	def closeEvent(self, event):
+		# Write Settings To File
+		config = configparser.ConfigParser()
+		config.add_section('settings')
+		config['settings']['cert-path'] = self.txtCertPath.text()
+		with open(self.configPath, 'w') as configfile:
+			config.write(configfile)
+		event.accept()
 
 	def OnOpenAboutDialog(self, e):
 		dlg = SimpleSignerAboutWindow(self)
@@ -151,7 +170,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		if(fileName): self.txtCertPath.setText(fileName)
 
 	def OnClickOpenSigned(self, e):
-		if self.existsBinary('libreoffice'): # LibreOffice displays signatures
+		if self.existsBinary('okular'): # Okular displays signatures
+			cmd = ['okular', self.getSignedPdfFileName()]
+		elif self.existsBinary('libreoffice'): # LibreOffice displays signatures
 			cmd = ['libreoffice', self.getSignedPdfFileName()]
 		elif self.existsBinary('xdg-open'): # Linux fallback
 			cmd = ['xdg-open', self.getSignedPdfFileName()]
@@ -186,17 +207,17 @@ class SimpleSignerMainWindow(QMainWindow):
 				"sigflagsft": 132,
 				"sigpage": 0,
 				"sigbutton": False,
-				"sigfield": "Signature"+strDate,
+				"sigfield": "Signature-"+str(datetime.datetime.utcnow().timestamp()),
 				"auto_sigfield": False,
 				"sigandcertify": True,
-				"signaturebox": (470, 840, 570, 640),
+				"signaturebox": (0, 0, 0, 0),
 				"signature": "",
 				#"signature_img": "signature_test.png",
 				"contact": "",
 				"location": "",
 				"signingdate": strDate,
 				"reason": "",
-				"password": "",
+				#"password": "",
 			}
 			certData = open(self.txtCertPath.text(), "rb").read()
 			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
