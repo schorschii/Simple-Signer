@@ -81,7 +81,19 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		# File Menu
 		fileMenu = mainMenu.addMenu('&File')
-
+		signAction = QAction('&Sign', self)
+		signAction.setShortcut('Ctrl+S')
+		signAction.triggered.connect(self.OnClickSign)
+		fileMenu.addAction(signAction)
+		fileMenu.addSeparator()
+		searchPdfAction = QAction('&Search PDF File...', self)
+		searchPdfAction.setShortcut('Ctrl+P')
+		searchPdfAction.triggered.connect(self.OnClickSearchPdfPath)
+		fileMenu.addAction(searchPdfAction)
+		searchCertificateAction = QAction('&Search Certificate File...', self)
+		searchCertificateAction.setShortcut('Ctrl+O')
+		searchCertificateAction.triggered.connect(self.OnClickSearchCertPath)
+		fileMenu.addAction(searchCertificateAction)
 		fileMenu.addSeparator()
 		quitAction = QAction('&Quit', self)
 		quitAction.setShortcut('Ctrl+Q')
