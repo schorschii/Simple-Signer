@@ -12,7 +12,8 @@ from cryptography.hazmat import backends
 from cryptography.hazmat.primitives.serialization import pkcs12
 from endesive.pdf import cms
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gtk2"
+if os.environ.get("QT_QPA_PLATFORMTHEME") == "qt5ct":
+	os.environ["QT_QPA_PLATFORMTHEME"] = "gtk2"
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
