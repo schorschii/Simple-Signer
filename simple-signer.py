@@ -12,6 +12,7 @@ from cryptography.hazmat import backends
 from cryptography.hazmat.primitives.serialization import pkcs12
 from endesive.pdf import cms
 
+os.environ["QT_QPA_PLATFORMTHEME"] = "gtk2"
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -162,12 +163,16 @@ class SimpleSignerMainWindow(QMainWindow):
 		dlg.exec_()
 
 	def OnClickSearchPdfPath(self, e):
-		fileName, _ = QFileDialog.getOpenFileName(self, "Choose PDF File", None, "PDF Files (*.pdf);;All Files (*.*)")
-		if(fileName): self.txtPdfPath.setText(fileName)
+		fileName = self.OpenFileDialog("Choose PDF File", "PDF Files (*.pdf);;All Files (*.*)")
+		if fileName: self.txtPdfPath.setText(fileName)
 
 	def OnClickSearchCertPath(self, e):
-		fileName, _ = QFileDialog.getOpenFileName(self, "Choose Certificate File", None, "Certificate Files (*.p12);;All Files (*.*)")
-		if(fileName): self.txtCertPath.setText(fileName)
+		fileName = self.OpenFileDialog("Choose Certificate File", "Certificate Files (*.p12);;All Files (*.*)")
+		if fileName: self.txtCertPath.setText(fileName)
+
+	def OpenFileDialog(self, title, filter):
+		fileName, _ = QFileDialog.getOpenFileName(self, title, None, filter)
+		return fileName
 
 	def OnClickOpenSigned(self, e):
 		if self.existsBinary('okular'): # Okular displays signatures
