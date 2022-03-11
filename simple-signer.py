@@ -135,13 +135,26 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.txtCertPassword.returnPressed.connect(self.OnReturnPressed)
 		grid.addWidget(self.txtCertPassword, 5, 0)
 
-		self.btnSign = QPushButton('Sign!')
-		#self.btnSign.setEnabled(False)
+		self.lblMode = QLabel('')
+		grid.addWidget(self.lblMode, 6, 0)
+
+		grid2 = QGridLayout()
+
+		self.btnSign = QPushButton('Sign')
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnSign.setFont(boldFont)
 		self.btnSign.clicked.connect(self.OnClickSign)
-		grid.addWidget(self.btnSign, 6, 0)
+		grid2.addWidget(self.btnSign, 0, 0)
+
+		self.btnCertfiy = QPushButton('Certify')
+		boldFont = QFont()
+		boldFont.setBold(True)
+		self.btnCertfiy.setFont(boldFont)
+		self.btnCertfiy.clicked.connect(self.OnClickCertify)
+		grid2.addWidget(self.btnCertfiy, 0, 1)
+
+		grid.addLayout(grid2, 7, 0)
 
 		widget = QWidget(self)
 		widget.setLayout(grid)
@@ -213,6 +226,12 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.OnClickSign(None)
 
 	def OnClickSign(self, e):
+		self.Sign(False)
+
+	def OnClickCertify(self, e):
+		self.Sign(True)
+
+	def Sign(self, certify):
 		try:
 			pdfPath = self.txtPdfPath.text()
 			signedPdfPath = self.getSignedPdfFileName()
@@ -227,7 +246,7 @@ class SimpleSignerMainWindow(QMainWindow):
 				"sigbutton": False,
 				"sigfield": "Signature-"+str(datetime.datetime.utcnow().timestamp()),
 				"auto_sigfield": False,
-				"sigandcertify": True,
+				"sigandcertify": certify,
 				"signaturebox": (0, 0, 0, 0),
 				"signature": "",
 				#"signature_img": "signature_test.png",
