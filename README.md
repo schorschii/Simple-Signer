@@ -29,7 +29,7 @@ then
 ### I18n
 ```
 # 1. Create translation files from code
-pylupdate5 main.py -ts lang/de.ts
+pylupdate5 simple-signer.py -ts lang/de.ts
 
 # 2. Use Qt Linguist to translate the file
 
