@@ -15,13 +15,13 @@
     </message>
     <message>
         <location filename="../simple-signer.py" line="97"/>
-        <source>Search &amp;PDF File...</source>
-        <translation>Suche &amp;PDF-Datei...</translation>
+        <source>Choose &amp;PDF File...</source>
+        <translation>&amp;PDF-Datei auswählen...</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="101"/>
-        <source>Search &amp;Certificate File...</source>
-        <translation>Suche &amp;Zertifikats-Datei...</translation>
+        <source>Choose &amp;Certificate File...</source>
+        <translation>&amp;Zertifikats-Datei auswählen...</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="106"/>
@@ -45,8 +45,8 @@
     </message>
     <message>
         <location filename="../simple-signer.py" line="134"/>
-        <source>Search...</source>
-        <translation>Suche...</translation>
+        <source>Choose...</source>
+        <translation>Auswählen...</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="130"/>
@@ -67,16 +67,6 @@
         <location filename="../simple-signer.py" line="157"/>
         <source>Certify</source>
         <translation>Zertifizieren</translation>
-    </message>
-    <message>
-        <location filename="../simple-signer.py" line="199"/>
-        <source>Choose PDF File</source>
-        <translation>PDF-Datei auswählen...</translation>
-    </message>
-    <message>
-        <location filename="../simple-signer.py" line="203"/>
-        <source>Choose Certificate File</source>
-        <translation>Zertifikats-Datei auswählen...</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="278"/>

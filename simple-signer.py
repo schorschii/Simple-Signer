@@ -94,14 +94,14 @@ class SimpleSignerMainWindow(QMainWindow):
 		signAction.triggered.connect(self.OnClickSign)
 		fileMenu.addAction(signAction)
 		fileMenu.addSeparator()
-		searchPdfAction = QAction(QApplication.translate('SimpleSigner', 'Search &PDF File...'), self)
-		searchPdfAction.setShortcut('Ctrl+P')
-		searchPdfAction.triggered.connect(self.OnClickSearchPdfPath)
-		fileMenu.addAction(searchPdfAction)
-		searchCertificateAction = QAction(QApplication.translate('SimpleSigner', 'Search &Certificate File...'), self)
-		searchCertificateAction.setShortcut('Ctrl+O')
-		searchCertificateAction.triggered.connect(self.OnClickSearchCertPath)
-		fileMenu.addAction(searchCertificateAction)
+		choosePdfAction = QAction(QApplication.translate('SimpleSigner', 'Choose &PDF File...'), self)
+		choosePdfAction.setShortcut('Ctrl+P')
+		choosePdfAction.triggered.connect(self.OnClickChoosePdfPath)
+		fileMenu.addAction(choosePdfAction)
+		chooseCertificateAction = QAction(QApplication.translate('SimpleSigner', 'Choose &Certificate File...'), self)
+		chooseCertificateAction.setShortcut('Ctrl+O')
+		chooseCertificateAction.triggered.connect(self.OnClickChooseCertPath)
+		fileMenu.addAction(chooseCertificateAction)
 		fileMenu.addSeparator()
 		quitAction = QAction(QApplication.translate('SimpleSigner', '&Quit'), self)
 		quitAction.setShortcut('Ctrl+Q')
@@ -123,17 +123,17 @@ class SimpleSignerMainWindow(QMainWindow):
 		grid.addWidget(self.lblPdfPath, 0, 0)
 		self.txtPdfPath = QLineEdit()
 		grid.addWidget(self.txtPdfPath, 1, 0)
-		self.btnSearchPdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Search...'))
-		self.btnSearchPdfPath.clicked.connect(self.OnClickSearchPdfPath)
-		grid.addWidget(self.btnSearchPdfPath, 1, 1)
+		self.btnChoosePdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChoosePdfPath.clicked.connect(self.OnClickChoosePdfPath)
+		grid.addWidget(self.btnChoosePdfPath, 1, 1)
 
 		self.lblCertPath = QLabel(QApplication.translate('SimpleSigner', 'Certificate File'))
 		grid.addWidget(self.lblCertPath, 2, 0)
 		self.txtCertPath = QLineEdit()
 		grid.addWidget(self.txtCertPath, 3, 0)
-		self.btnSearchCertPath = QPushButton(QApplication.translate('SimpleSigner', 'Search...'))
-		self.btnSearchCertPath.clicked.connect(self.OnClickSearchCertPath)
-		grid.addWidget(self.btnSearchCertPath, 3, 1)
+		self.btnChooseCertPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChooseCertPath.clicked.connect(self.OnClickChooseCertPath)
+		grid.addWidget(self.btnChooseCertPath, 3, 1)
 
 		self.lblPassword = QLabel(QApplication.translate('SimpleSigner', 'Certificate Password'))
 		grid.addWidget(self.lblPassword, 4, 0)
@@ -195,12 +195,12 @@ class SimpleSignerMainWindow(QMainWindow):
 		dlg = SimpleSignerAboutWindow(self)
 		dlg.exec_()
 
-	def OnClickSearchPdfPath(self, e):
-		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Choose PDF File'), 'PDF Files (*.pdf);;All Files (*.*)')
+	def OnClickChoosePdfPath(self, e):
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'PDF File'), 'PDF Files (*.pdf);;All Files (*.*)')
 		if fileName: self.txtPdfPath.setText(fileName)
 
-	def OnClickSearchCertPath(self, e):
-		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Choose Certificate File'), 'Certificate Files (*.p12);;All Files (*.*)')
+	def OnClickChooseCertPath(self, e):
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12);;All Files (*.*)')
 		if fileName: self.txtCertPath.setText(fileName)
 
 	def OpenFileDialog(self, title, filter):
