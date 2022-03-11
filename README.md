@@ -24,3 +24,15 @@ or
 then
 
 - Enter the path to your certificate file and your certificate's passphrase, then click "Sign!"
+
+## Development
+### I18n
+```
+# 1. Create translation files from code
+pylupdate5 main.py -ts lang/de.ts
+
+# 2. Use Qt Linguist to translate the file
+
+# 3. Compile translation files for usage
+lrelease lang/de.ts
+```

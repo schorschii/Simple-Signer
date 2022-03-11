@@ -17,6 +17,7 @@ if os.environ.get("QT_QPA_PLATFORMTHEME") == "qt5ct":
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from locale import getdefaultlocale
 
 
 class SimpleSignerAboutWindow(QDialog):
@@ -39,7 +40,7 @@ class SimpleSignerAboutWindow(QDialog):
 		labelCopyright = QLabel(self)
 		labelCopyright.setText(
 			"<br>"
-			"© 2021 <a href='https://georg-sieber.de'>Georg Sieber</a>"
+			"© 2021-2022 <a href='https://georg-sieber.de'>Georg Sieber</a>"
 			"<br>"
 			"<br>"
 			"GNU General Public License v3.0"
@@ -53,7 +54,13 @@ class SimpleSignerAboutWindow(QDialog):
 
 		labelDescription = QLabel(self)
 		labelDescription.setText(
-			"""Simple-Signer allows you to to sign PDFs using a simple GUI.\n\n"""
+			QApplication.translate('SimpleSigner',
+				"Simple-Signer allows you to to sign PDFs using a simple user interface."
+				"\n\n"
+				"Signing allows multiple users to place their digital signature on a document."
+				"\n"
+				"Certifiy will place your signature on the document and lock it after that."
+			)+"\n\n"
 		)
 		labelDescription.setStyleSheet("opacity:0.8")
 		#labelDescription.setFixedWidth(400)
@@ -63,7 +70,7 @@ class SimpleSignerAboutWindow(QDialog):
 		self.layout.addWidget(self.buttonBox)
 
 		self.setLayout(self.layout)
-		self.setWindowTitle("About")
+		self.setWindowTitle(QApplication.translate('SimpleSigner', 'About'))
 
 class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
@@ -81,30 +88,30 @@ class SimpleSignerMainWindow(QMainWindow):
 		mainMenu = self.menuBar()
 
 		# File Menu
-		fileMenu = mainMenu.addMenu('&File')
-		signAction = QAction('&Sign', self)
+		fileMenu = mainMenu.addMenu(QApplication.translate('SimpleSigner', '&File'))
+		signAction = QAction(QApplication.translate('SimpleSigner', '&Sign'), self)
 		signAction.setShortcut('Ctrl+S')
 		signAction.triggered.connect(self.OnClickSign)
 		fileMenu.addAction(signAction)
 		fileMenu.addSeparator()
-		searchPdfAction = QAction('&Search PDF File...', self)
+		searchPdfAction = QAction(QApplication.translate('SimpleSigner', 'Search &PDF File...'), self)
 		searchPdfAction.setShortcut('Ctrl+P')
 		searchPdfAction.triggered.connect(self.OnClickSearchPdfPath)
 		fileMenu.addAction(searchPdfAction)
-		searchCertificateAction = QAction('&Search Certificate File...', self)
+		searchCertificateAction = QAction(QApplication.translate('SimpleSigner', 'Search &Certificate File...'), self)
 		searchCertificateAction.setShortcut('Ctrl+O')
 		searchCertificateAction.triggered.connect(self.OnClickSearchCertPath)
 		fileMenu.addAction(searchCertificateAction)
 		fileMenu.addSeparator()
-		quitAction = QAction('&Quit', self)
+		quitAction = QAction(QApplication.translate('SimpleSigner', '&Quit'), self)
 		quitAction.setShortcut('Ctrl+Q')
 		quitAction.triggered.connect(self.close)
 		fileMenu.addAction(quitAction)
 
 		# Help Menu
-		editMenu = mainMenu.addMenu('&Help')
+		editMenu = mainMenu.addMenu(QApplication.translate('SimpleSigner', '&Help'))
 
-		aboutAction = QAction('&About', self)
+		aboutAction = QAction(QApplication.translate('SimpleSigner', '&About'), self)
 		aboutAction.setShortcut('F1')
 		aboutAction.triggered.connect(self.OnOpenAboutDialog)
 		editMenu.addAction(aboutAction)
@@ -112,23 +119,23 @@ class SimpleSignerMainWindow(QMainWindow):
 		# Window Content
 		grid = QGridLayout()
 
-		self.lblPdfPath = QLabel('PDF File')
+		self.lblPdfPath = QLabel(QApplication.translate('SimpleSigner', 'PDF File'))
 		grid.addWidget(self.lblPdfPath, 0, 0)
 		self.txtPdfPath = QLineEdit()
 		grid.addWidget(self.txtPdfPath, 1, 0)
-		self.btnSearchPdfPath = QPushButton('Search...')
+		self.btnSearchPdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Search...'))
 		self.btnSearchPdfPath.clicked.connect(self.OnClickSearchPdfPath)
 		grid.addWidget(self.btnSearchPdfPath, 1, 1)
 
-		self.lblCertPath = QLabel('Certificate File')
+		self.lblCertPath = QLabel(QApplication.translate('SimpleSigner', 'Certificate File'))
 		grid.addWidget(self.lblCertPath, 2, 0)
 		self.txtCertPath = QLineEdit()
 		grid.addWidget(self.txtCertPath, 3, 0)
-		self.btnSearchCertPath = QPushButton('Search...')
+		self.btnSearchCertPath = QPushButton(QApplication.translate('SimpleSigner', 'Search...'))
 		self.btnSearchCertPath.clicked.connect(self.OnClickSearchCertPath)
 		grid.addWidget(self.btnSearchCertPath, 3, 1)
 
-		self.lblPassword = QLabel('Certificate Password')
+		self.lblPassword = QLabel(QApplication.translate('SimpleSigner', 'Certificate Password'))
 		grid.addWidget(self.lblPassword, 4, 0)
 		self.txtCertPassword = QLineEdit()
 		self.txtCertPassword.setEchoMode(QLineEdit.Password)
@@ -140,14 +147,14 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		grid2 = QGridLayout()
 
-		self.btnSign = QPushButton('Sign')
+		self.btnSign = QPushButton(QApplication.translate('SimpleSigner', 'Sign'))
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnSign.setFont(boldFont)
 		self.btnSign.clicked.connect(self.OnClickSign)
 		grid2.addWidget(self.btnSign, 0, 0)
 
-		self.btnCertfiy = QPushButton('Certify')
+		self.btnCertfiy = QPushButton(QApplication.translate('SimpleSigner', 'Certify'))
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnCertfiy.setFont(boldFont)
@@ -189,11 +196,11 @@ class SimpleSignerMainWindow(QMainWindow):
 		dlg.exec_()
 
 	def OnClickSearchPdfPath(self, e):
-		fileName = self.OpenFileDialog("Choose PDF File", "PDF Files (*.pdf);;All Files (*.*)")
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Choose PDF File'), 'PDF Files (*.pdf);;All Files (*.*)')
 		if fileName: self.txtPdfPath.setText(fileName)
 
 	def OnClickSearchCertPath(self, e):
-		fileName = self.OpenFileDialog("Choose Certificate File", "Certificate Files (*.p12);;All Files (*.*)")
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Choose Certificate File'), 'Certificate Files (*.p12);;All Files (*.*)')
 		if fileName: self.txtCertPath.setText(fileName)
 
 	def OpenFileDialog(self, title, filter):
@@ -266,11 +273,11 @@ class SimpleSignerMainWindow(QMainWindow):
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Information)
 				msg.setWindowTitle('😇')
-				msg.setText('Successfully signed and saved as »'+signedPdfPath+'«.')
+				msg.setText(QApplication.translate('SimpleSigner', 'Successfully saved as »%s«.') % signedPdfPath)
 				msg.setStandardButtons(QMessageBox.Ok)
-				btnOpen = msg.addButton('Open Directory', QMessageBox.ActionRole)
+				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Directory'), QMessageBox.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSignedInFileManager)
-				btnOpen = msg.addButton('Open Signed PDF', QMessageBox.ActionRole)
+				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Signed PDF'), QMessageBox.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSigned)
 				retval = msg.exec_()
 
@@ -294,8 +301,16 @@ class SimpleSignerMainWindow(QMainWindow):
 
 def main():
 	app = QApplication(sys.argv)
+	translator = QTranslator(app)
+	if(os.path.isdir('lang')):
+		translator.load('lang/%s.qm' % getdefaultlocale()[0])
+	else:
+		translator.load('/usr/share/simple-signer/lang/%s.qm' % getdefaultlocale()[0])
+	app.installTranslator(translator)
+
 	window = SimpleSignerMainWindow()
 	window.show()
+
 	sys.exit(app.exec_())
 
 if __name__ == '__main__':
