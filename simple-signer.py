@@ -54,13 +54,12 @@ class SimpleSignerAboutWindow(QDialog):
 
 		labelDescription = QLabel(self)
 		labelDescription.setText(
-			QApplication.translate('SimpleSigner',
-				"Simple-Signer allows you to to sign PDFs using a simple user interface."
-				"\n\n"
-				"Signing allows multiple users to place their digital signature on a document."
-				"\n"
-				"Certifiy will place your signature on the document and lock it after that."
-			)+"\n\n"
+			QApplication.translate('SimpleSigner', 'Simple-Signer allows you to to sign PDFs using a simple user interface.')
+			+"\n\n"+
+			QApplication.translate('SimpleSigner', 'Signing allows multiple users to place their digital signature on a document.')
+			+"\n"+
+			QApplication.translate('SimpleSigner', 'Certifiy will place your signature on the document and lock it after that.')
+			+"\n"
 		)
 		labelDescription.setStyleSheet("opacity:0.8")
 		#labelDescription.setFixedWidth(400)
@@ -152,6 +151,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		grid2 = QGridLayout()
 
 		self.btnSign = QPushButton(QApplication.translate('SimpleSigner', 'Sign'))
+		self.btnSign.setToolTip(QApplication.translate('SimpleSigner', 'Signing allows multiple users to place their digital signature on a document.'));
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnSign.setFont(boldFont)
@@ -159,6 +159,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		grid2.addWidget(self.btnSign, 0, 0)
 
 		self.btnCertfiy = QPushButton(QApplication.translate('SimpleSigner', 'Certify'))
+		self.btnCertfiy.setToolTip(QApplication.translate('SimpleSigner', 'Certifiy will place your signature on the document and lock it after that.'));
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnCertfiy.setFont(boldFont)
