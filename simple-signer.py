@@ -245,10 +245,12 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def Sign(self, certify):
 		try:
+			# get/compile paths
 			pdfPath = self.txtPdfPath.text()
 			signedPdfPath = self.getSignedPdfFileName()
-			if pdfPath == signedPdfPath: return
+			if(pdfPath == signedPdfPath): return
 
+			# compile sign options
 			strDate = (datetime.datetime.utcnow() - datetime.timedelta(hours=12)).strftime("D:%Y%m%d%H%M%S+00'00'")
 			dct = {
 				"aligned": 0,
@@ -268,13 +270,33 @@ class SimpleSignerMainWindow(QMainWindow):
 				"reason": "",
 				#"password": "",
 			}
+
+			# load certificate
 			certData = open(self.txtCertPath.text(), "rb").read()
 			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
+
+			# check certificate
+			if(p12Data[1] != None and p12Data[1].not_valid_after < datetime.datetime.now()):
+				msg = QMessageBox()
+				msg.setIcon(QMessageBox.Warning)
+				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
+				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
+				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+				if(msg.exec_() == QMessageBox.Cancel):
+					return
+
+			# load source PDF
 			pdfData = open(pdfPath, "rb").read()
+
+			# sign
 			signData = cms.sign(pdfData, dct, p12Data[0], p12Data[1], p12Data[2], "sha256")
+
+			# save signed target PDF
 			with open(signedPdfPath, "wb") as fp:
 				fp.write(pdfData)
 				fp.write(signData)
+
+				# success message
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Information)
 				msg.setWindowTitle('😇')
@@ -287,6 +309,7 @@ class SimpleSignerMainWindow(QMainWindow):
 				retval = msg.exec_()
 
 		except Exception as e:
+			# error message
 			msg = QMessageBox()
 			msg.setIcon(QMessageBox.Critical)
 			msg.setWindowTitle('😕')
