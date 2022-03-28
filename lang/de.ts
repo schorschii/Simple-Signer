@@ -68,12 +68,12 @@
         <translation>Zertifizieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="305"/>
+        <location filename="../simple-signer.py" line="313"/>
         <source>Open Directory</source>
         <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="307"/>
+        <location filename="../simple-signer.py" line="315"/>
         <source>Open Signed PDF</source>
         <translation>Signiertes PDF öffnen</translation>
     </message>
@@ -103,19 +103,29 @@
         <translation>Beim Zertifizieren wird ihre Unterschrift auf dem Dokument platziert und danach gesperrt.</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="282"/>
+        <location filename="../simple-signer.py" line="290"/>
         <source>Certificate Warning</source>
         <translation>Zertifikatswarnung</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="283"/>
+        <location filename="../simple-signer.py" line="291"/>
         <source>Your certificate expired on %s. Continue?</source>
         <translation>Ihr Zertifikat ist am %s abgelaufen. Fortfahren?</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../simple-signer.py" line="303"/>
+        <location filename="../simple-signer.py" line="311"/>
         <source>Successfully saved as »%s«.</source>
         <translation>Erfolgreich gespeichert als »%s«.</translation>
+    </message>
+    <message>
+        <location filename="../simple-signer.py" line="255"/>
+        <source>File Warning</source>
+        <translation>Dateiwarnung</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../simple-signer.py" line="256"/>
+        <source>The target file »%s« already exists. Continue?</source>
+        <translation>Die Zieldatei »%s« existiert bereits. Fortfahren?</translation>
     </message>
 </context>
 </TS>

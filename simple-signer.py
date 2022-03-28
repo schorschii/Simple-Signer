@@ -249,6 +249,14 @@ class SimpleSignerMainWindow(QMainWindow):
 			pdfPath = self.txtPdfPath.text()
 			signedPdfPath = self.getSignedPdfFileName()
 			if(pdfPath == signedPdfPath): return
+			if(os.path.exists(signedPdfPath)):
+				msg = QMessageBox()
+				msg.setIcon(QMessageBox.Warning)
+				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'File Warning'))
+				msg.setText(QApplication.translate('SimpleSigner', 'The target file »%s« already exists. Continue?') % signedPdfPath)
+				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+				if(msg.exec_() == QMessageBox.Cancel):
+					return
 
 			# compile sign options
 			strDate = (datetime.datetime.utcnow() - datetime.timedelta(hours=12)).strftime("D:%Y%m%d%H%M%S+00'00'")
