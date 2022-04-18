@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # *-* coding: utf-8 *-*
 
-import sys, os
+import sys, os, io
 import datetime
 import subprocess
 import configparser
@@ -70,6 +70,91 @@ class SimpleSignerAboutWindow(QDialog):
 
 		self.setLayout(self.layout)
 		self.setWindowTitle(QApplication.translate('SimpleSigner', 'About'))
+
+class SimpleSignerPreview(QLabel):
+	rubberBand = None
+	origin = None
+	rect = None
+
+	def mousePressEvent(self, event):
+		self.origin = event.pos()
+		if(self.rubberBand == None): self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
+		self.rubberBand.setGeometry(QRect(self.origin, QSize()))
+		self.rubberBand.show()
+
+	def mouseMoveEvent(self, event):
+		self.rubberBand.setGeometry(QRect(self.origin, event.pos()).normalized())
+
+	def mouseReleaseEvent(self, event):
+		#self.rubberBand.hide()
+		self.rect = QRect(self.origin, event.pos()).normalized()
+
+class SimpleSignerPreviewWindow(QDialog):
+	pdfFilePath = None
+	pages = []
+
+	stampRect = None
+	stampPage = None
+
+	def __init__(self, parent, pdfFilePath):
+		super(SimpleSignerPreviewWindow, self).__init__(parent)
+		self.pdfFilePath = pdfFilePath
+
+		# Load PDF Preview
+		from PIL.ImageQt import ImageQt
+		from pdf2image import convert_from_path
+		self.pages = convert_from_path(self.pdfFilePath, 60)
+		if(len(self.pages) == 0):
+			raise Exception('Nüscht drinne!')
+
+		self.InitUI()
+
+	def InitUI(self):
+		# Window Content
+		grid = QGridLayout()
+
+		grid2 = QGridLayout()
+		label = QLabel('Page:')
+		grid2.addWidget(label, 0, 0)
+		self.sltPage = QComboBox()
+		for page in self.pages:
+			self.sltPage.addItem(str(self.pages.index(page) + 1))
+		self.sltPage.currentIndexChanged.connect(self.OnCurrentIndexChanged)
+		grid2.addWidget(self.sltPage, 0, 1)
+		grid.addLayout(grid2, 0, 0)
+
+		self.lblPageView = SimpleSignerPreview()
+		self.lblPageView.setScaledContents(True)
+		self.lblPageView.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[0]))
+		grid.addWidget(self.lblPageView, 1, 0)
+
+		self.btnDone = QPushButton('Done')
+		self.btnDone.clicked.connect(self.OnClickDone)
+		grid.addWidget(self.btnDone, 2, 0)
+
+		self.setLayout(grid)
+
+		# Window Settings
+		self.setMinimumSize(600, 900)
+		self.setWindowTitle('Place Stamp')
+
+	def pil2pixmap(self, image):
+		bytes_img = io.BytesIO()
+		image.save(bytes_img, format='JPEG')
+		qimg = QImage()
+		qimg.loadFromData(bytes_img.getvalue())
+		return QPixmap.fromImage(qimg)
+
+	def OnCurrentIndexChanged(self, index):
+		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[index]))
+
+	def OnClickDone(self, e):
+		self.stampPage = self.sltPage.currentIndex()
+		self.stampRect = [self.lblPageView.rect.x(), self.lblPageView.rect.y(), self.lblPageView.rect.width(), self.lblPageView.rect.height()]
+		print(self.stampPage)
+		print(self.stampRect)
+		self.close()
 
 class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
@@ -145,8 +230,18 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.txtCertPassword.returnPressed.connect(self.OnReturnPressed)
 		grid.addWidget(self.txtCertPassword, 5, 0)
 
-		self.lblMode = QLabel('')
-		grid.addWidget(self.lblMode, 6, 0)
+		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
+		grid.addWidget(self.chkDrawStamp, 6, 0)
+		self.txtStampPath = QLineEdit()
+		grid.addWidget(self.txtStampPath, 7, 0)
+		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChooseStampPath.clicked.connect(self.OnClickChooseStampPath)
+		grid.addWidget(self.btnChooseStampPath, 7, 1)
+
+		line = QFrame()
+		line.setFrameShape(QFrame.HLine)
+		line.setFrameShadow(QFrame.Sunken)
+		grid.addWidget(line, 8, 0)
 
 		grid2 = QGridLayout()
 
@@ -166,7 +261,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.btnCertfiy.clicked.connect(self.OnClickCertify)
 		grid2.addWidget(self.btnCertfiy, 0, 1)
 
-		grid.addLayout(grid2, 7, 0)
+		grid.addLayout(grid2, 9, 0)
 
 		widget = QWidget(self)
 		widget.setLayout(grid)
@@ -181,7 +276,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		if os.path.exists(self.configPath):
 			config = configparser.ConfigParser()
 			config.read(self.configPath)
-			self.txtCertPath.setText(config['settings']['cert-path'])
+			if('cert-path' in config['settings']): self.txtCertPath.setText(config['settings']['cert-path'])
+			if('stamp-path' in config['settings']): self.txtStampPath.setText(config['settings']['stamp-path'])
+			if('draw-stamp' in config['settings']): self.chkDrawStamp.setChecked(True if config['settings']['draw-stamp']=='1' else False)
 
 		# Defaults From Command Line
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
@@ -192,6 +289,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		config = configparser.ConfigParser()
 		config.add_section('settings')
 		config['settings']['cert-path'] = self.txtCertPath.text()
+		config['settings']['stamp-path'] = self.txtStampPath.text()
+		config['settings']['draw-stamp'] = '1' if self.chkDrawStamp.isChecked() else '0'
 		with open(self.configPath, 'w') as configfile:
 			config.write(configfile)
 		event.accept()
@@ -207,6 +306,10 @@ class SimpleSignerMainWindow(QMainWindow):
 	def OnClickChooseCertPath(self, e):
 		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12);;All Files (*.*)')
 		if fileName: self.txtCertPath.setText(fileName)
+
+	def OnClickChooseStampPath(self, e):
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Stamp Image File'), 'Image Files (*.jpg *.png);;All Files (*.*)')
+		if fileName: self.txtStampPath.setText(fileName)
 
 	def OpenFileDialog(self, title, filter):
 		fileName, _ = QFileDialog.getOpenFileName(self, title, None, filter)
@@ -245,42 +348,72 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def Sign(self, certify):
 		try:
+			#dlg = SimpleSignerPreviewWindow(self, '/home/georg/Schreibtisch/Unbenannt 1.pdf')
+			#dlg.exec_()
+			#return
+
 			# get/compile paths
 			pdfPath = self.txtPdfPath.text()
 			signedPdfPath = self.getSignedPdfFileName()
-			if(pdfPath == signedPdfPath): return
 			if(os.path.exists(signedPdfPath)):
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Warning)
 				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'File Warning'))
 				msg.setText(QApplication.translate('SimpleSigner', 'The target file »%s« already exists. Continue?') % signedPdfPath)
 				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-				if(msg.exec_() == QMessageBox.Cancel):
-					return
+				if(msg.exec_() == QMessageBox.Cancel): return
 
 			# compile sign options
 			strDate = (datetime.datetime.utcnow() - datetime.timedelta(hours=12)).strftime("D:%Y%m%d%H%M%S+00'00'")
 			dct = {
-				"aligned": 0,
-				"sigflags": 3,
-				"sigflagsft": 132,
-				"sigpage": 0,
-				"sigbutton": False,
-				"sigfield": "Signature-"+str(datetime.datetime.utcnow().timestamp()),
-				"auto_sigfield": False,
-				"sigandcertify": certify,
-				"signaturebox": (0, 0, 0, 0),
-				"signature": "",
-				#"signature_img": "signature_test.png",
-				"contact": "",
-				"location": "",
-				"signingdate": strDate,
-				"reason": "",
-				#"password": "",
+				'aligned': 0,
+				'sigflags': 3,
+				'sigflagsft': 132,
+				'sigpage': 0,
+				'sigbutton': False,
+				'sigfield': 'Signature-'+str(datetime.datetime.utcnow().timestamp()),
+				'auto_sigfield': False,
+				'sigandcertify': certify,
+				'signaturebox': (0, 0, 0, 0),
+				'contact': '',
+				'location': '',
+				'reason': '',
+				'signingdate': strDate,
 			}
 
+			if(self.chkDrawStamp.isChecked()):
+				dlg = SimpleSignerPreviewWindow(self, pdfPath)
+				dlg.exec_()
+				dct['signaturebox'] = dlg.stampRect
+				dct['sigpage'] = dlg.stampPage
+				dct['signature_appearance'] = {
+					'background': [0.75, 0.8, 0.95],
+					'outline': [0.2, 0.3, 0.5],
+					'border': 1,
+					'labels': True,
+					'display': 'CN,DN,date,contact,reason,location'.split(','),
+				}
+				if(os.path.exists(self.txtStampPath.text())):
+					dct['signature_appearance']['icon'] = self.txtStampPath.text()
+
+			else:
+				dct['signature'] = ''
+
+			self.DoSign(pdfPath, signedPdfPath, dct)
+
+		except Exception as e:
+			# error message
+			msg = QMessageBox()
+			msg.setIcon(QMessageBox.Critical)
+			msg.setWindowTitle('😕')
+			msg.setText(str(e))
+			msg.setStandardButtons(QMessageBox.Ok)
+			retval = msg.exec_()
+
+	def DoSign(self, pdfPath, signedPdfPath, dct):
+		try:
 			# load certificate
-			certData = open(self.txtCertPath.text(), "rb").read()
+			certData = open(self.txtCertPath.text(), 'rb').read()
 			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
 
 			# check certificate
@@ -290,17 +423,16 @@ class SimpleSignerMainWindow(QMainWindow):
 				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
 				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
 				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-				if(msg.exec_() == QMessageBox.Cancel):
-					return
+				if(msg.exec_() == QMessageBox.Cancel): return
 
 			# load source PDF
-			pdfData = open(pdfPath, "rb").read()
+			pdfData = open(pdfPath, 'rb').read()
 
 			# sign
-			signData = cms.sign(pdfData, dct, p12Data[0], p12Data[1], p12Data[2], "sha256")
+			signData = cms.sign(pdfData, dct, p12Data[0], p12Data[1], p12Data[2], 'sha256')
 
 			# save signed target PDF
-			with open(signedPdfPath, "wb") as fp:
+			with open(signedPdfPath, 'wb') as fp:
 				fp.write(pdfData)
 				fp.write(signData)
 
@@ -327,10 +459,10 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def getSignedPdfFileName(self):
 		originalFileName = self.txtPdfPath.text()
-		if originalFileName.lower().endswith(".pdf"):
-			return originalFileName[:-4]+"-signed.pdf"
+		if originalFileName.lower().endswith('.pdf'):
+			return originalFileName[:-4]+'-signed.pdf'
 		else:
-			return originalFileName+"-signed.pdf"
+			return originalFileName+'-signed.pdf'
 
 	def existsBinary(self, name):
 		return which(name) is not None
