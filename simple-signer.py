@@ -12,8 +12,10 @@ from cryptography.hazmat import backends
 from cryptography.hazmat.primitives.serialization import pkcs12
 from endesive.pdf import cms
 
-if os.environ.get("QT_QPA_PLATFORMTHEME") == "qt5ct":
-	os.environ["QT_QPA_PLATFORMTHEME"] = "gtk2"
+# gtk2 theme is more convenient when it comes to
+# selecting files from network shares using QFileDialog (on linux)
+if os.environ.get('QT_QPA_PLATFORMTHEME') == 'qt5ct':
+	os.environ['QT_QPA_PLATFORMTHEME'] = 'gtk2'
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
