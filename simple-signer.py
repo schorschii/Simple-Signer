@@ -107,7 +107,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		from pdf2image import convert_from_path
 		self.pages = convert_from_path(self.pdfFilePath, 60)
 		if(len(self.pages) == 0):
-			raise Exception('Nüscht drinne!')
+			raise Exception(QApplication.translate('SimpleSigner', 'PDF is empty!'))
 
 		self.InitUI()
 
@@ -116,7 +116,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		grid = QGridLayout()
 
 		grid2 = QGridLayout()
-		label = QLabel('Page:')
+		label = QLabel(QApplication.translate('SimpleSigner', 'Page:'))
 		grid2.addWidget(label, 0, 0)
 		self.sltPage = QComboBox()
 		for page in self.pages:
@@ -131,7 +131,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[0]))
 		grid.addWidget(self.lblPageView, 1, 0)
 
-		self.btnDone = QPushButton('Done')
+		self.btnDone = QPushButton(QApplication.translate('SimpleSigner', 'Done'))
 		self.btnDone.clicked.connect(self.OnClickDone)
 		grid.addWidget(self.btnDone, 2, 0)
 
@@ -139,7 +139,7 @@ class SimpleSignerPreviewWindow(QDialog):
 
 		# Window Settings
 		self.setMinimumSize(600, 900)
-		self.setWindowTitle('Place Stamp')
+		self.setWindowTitle(QApplication.translate('SimpleSigner', 'Place Stamp'))
 
 	def pil2pixmap(self, image):
 		bytes_img = io.BytesIO()
@@ -154,8 +154,6 @@ class SimpleSignerPreviewWindow(QDialog):
 	def OnClickDone(self, e):
 		self.stampPage = self.sltPage.currentIndex()
 		self.stampRect = [self.lblPageView.rect.x(), self.lblPageView.rect.y(), self.lblPageView.rect.width(), self.lblPageView.rect.height()]
-		print(self.stampPage)
-		print(self.stampRect)
 		self.close()
 
 class SimpleSignerMainWindow(QMainWindow):
@@ -235,6 +233,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
 		grid.addWidget(self.chkDrawStamp, 6, 0)
 		self.txtStampPath = QLineEdit()
+		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(optional)'))
 		grid.addWidget(self.txtStampPath, 7, 0)
 		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChooseStampPath.clicked.connect(self.OnClickChooseStampPath)
@@ -386,6 +385,8 @@ class SimpleSignerMainWindow(QMainWindow):
 			if(self.chkDrawStamp.isChecked()):
 				dlg = SimpleSignerPreviewWindow(self, pdfPath)
 				dlg.exec_()
+				if(dlg.stampRect == None or dlg.stampPage == None): return
+				print(dlg.stampRect)
 				dct['signaturebox'] = dlg.stampRect
 				dct['sigpage'] = dlg.stampPage
 				dct['signature_appearance'] = {
