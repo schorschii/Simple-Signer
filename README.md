@@ -10,8 +10,8 @@ apt install python3-pip python3-pyqt5 swig
 (sudo -H) pip3 install endesive PyMuPDF
 
 # move simple-signer.py into /usr/bin/simple-signer
-# move simple-signer.nemo_action into /usr/local/share/nemo/actions
 # move simple-signer.desktop into /usr/local/share/applications
+sudo update-desktop-database
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ apt install python3-pip python3-pyqt5 swig
 
 or
 
-- Right-click on a PDF file in Nemo file manager and select "Sign PDF" -> Simple Signer GUI will appear.
+- Right-click on a PDF file in your file manager -> "Open With" -> "Simple Signer".
 
 then
 
