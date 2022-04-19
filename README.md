@@ -7,7 +7,7 @@ On current Ubuntu versions, it is not possible to import personal certificates i
 ## Installation
 ```
 apt install python3-pip python3-pyqt5 swig
-pip3 install endesive
+(sudo -H) pip3 install endesive
 
 # move simple-signer.py into /usr/bin/simple-signer
 # move simple-signer.nemo_action into /usr/local/share/nemo/actions
@@ -23,7 +23,9 @@ or
 
 then
 
-- Enter the path to your certificate file and your certificate's passphrase, then click "Sign!"
+- Enter the path to your certificate file and your certificate's passphrase, then click:
+  - **Sign**: allows multiple users to place their signature
+  - **Certify**: places your signature and locks the document - after that, no further signature can be added
 
 ## Development
 ### I18n
