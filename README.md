@@ -6,7 +6,7 @@ On current Ubuntu versions, it is not possible to import personal certificates i
 
 ## Installation
 ```
-apt install python3-pyqt5
+apt install python3-pyqt5 swig
 pip3 install endesive
 
 # move simple-signer.py into /usr/bin/simple-signer
