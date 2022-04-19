@@ -6,8 +6,8 @@ On current Ubuntu versions, it is not possible to import personal certificates i
 
 ## Installation
 ```
-apt install python3-pip python3-pyqt5 swig poppler-utils
-(sudo -H) pip3 install endesive pdf2image
+apt install python3-pip python3-pyqt5 swig
+(sudo -H) pip3 install endesive PyMuPDF
 
 # move simple-signer.py into /usr/bin/simple-signer
 # move simple-signer.nemo_action into /usr/local/share/nemo/actions

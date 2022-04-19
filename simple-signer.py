@@ -93,7 +93,7 @@ class SimpleSignerPreview(QLabel):
 
 class SimpleSignerPreviewWindow(QDialog):
 	pdfFilePath = None
-	pages = []
+	pdfDocument = None
 
 	stampRect = None
 	stampPage = None
@@ -103,10 +103,10 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.pdfFilePath = pdfFilePath
 
 		# Load PDF Preview
+		import fitz
 		from PIL.ImageQt import ImageQt
-		from pdf2image import convert_from_path
-		self.pages = convert_from_path(self.pdfFilePath, 60)
-		if(len(self.pages) == 0):
+		self.pdfDocument = fitz.open(self.pdfFilePath)
+		if(self.pdfDocument.page_count == 0):
 			raise Exception(QApplication.translate('SimpleSigner', 'PDF is empty!'))
 
 		self.InitUI()
@@ -119,8 +119,8 @@ class SimpleSignerPreviewWindow(QDialog):
 		label = QLabel(QApplication.translate('SimpleSigner', 'Page:'))
 		grid2.addWidget(label, 0, 0)
 		self.sltPage = QComboBox()
-		for page in self.pages:
-			self.sltPage.addItem(str(self.pages.index(page) + 1))
+		for i in range(0, self.pdfDocument.page_count):
+			self.sltPage.addItem(str(i + 1))
 		self.sltPage.currentIndexChanged.connect(self.OnCurrentIndexChanged)
 		grid2.addWidget(self.sltPage, 0, 1)
 		grid.addLayout(grid2, 0, 0)
@@ -128,7 +128,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.lblPageView = SimpleSignerPreview()
 		self.lblPageView.setScaledContents(True)
 		self.lblPageView.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[0]))
+		self.lblPageView.setPixmap(self.pymupixmap2qpixmap(self.pdfDocument[0].get_pixmap()))
 		grid.addWidget(self.lblPageView, 1, 0)
 
 		self.btnDone = QPushButton(QApplication.translate('SimpleSigner', 'Done'))
@@ -141,10 +141,10 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.setMinimumSize(600, 900)
 		self.setWindowTitle(QApplication.translate('SimpleSigner', 'Place Stamp'))
 
-	# function to convert python PIL image object to QT pixmap for usage in QT controls
-	def pil2pixmap(self, image):
+	# function to convert PyMuPDF pixmap object to QT pixmap for usage in QT controls
+	def pymupixmap2qpixmap(self, image):
 		bytes_img = io.BytesIO()
-		image.save(bytes_img, format='JPEG')
+		image.pil_save(bytes_img, format='JPEG')
 		qimg = QImage()
 		qimg.loadFromData(bytes_img.getvalue())
 		return QPixmap.fromImage(qimg)
@@ -168,22 +168,18 @@ class SimpleSignerPreviewWindow(QDialog):
 		]
 
 	def OnCurrentIndexChanged(self, index):
-		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[index]))
+		self.lblPageView.setPixmap(self.pymupixmap2qpixmap(self.pdfDocument[index].get_pixmap()))
 
 	def OnClickDone(self, e):
 		if(self.lblPageView.rect == None):
 			self.close()
 			return
 
+		pageDimensions = self.pdfDocument[self.sltPage.currentIndex()].mediabox_size
 		normalizedRect = self.lblPageView.rect.normalized()
 		rect = [ normalizedRect.x(), normalizedRect.y(), normalizedRect.width(), normalizedRect.height() ]
-
-		print([self.lblPageView.width(), self.lblPageView.height()])
-		print(rect)
 		rect = self.translateRectCoordinateOrigin(rect, self.lblPageView.height())
-		print(rect)
-		rect = self.translateRectToRealSize(rect, self.lblPageView.width(), self.lblPageView.height(), 595, 840)
-		print(rect)
+		rect = self.translateRectToRealSize(rect, self.lblPageView.width(), self.lblPageView.height(), pageDimensions.x, pageDimensions.y)
 
 		self.stampPage = self.sltPage.currentIndex()
 		self.stampRect = rect
