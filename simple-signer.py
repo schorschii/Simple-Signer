@@ -393,7 +393,7 @@ class SimpleSignerMainWindow(QMainWindow):
 					'outline': [0.2, 0.3, 0.5],
 					'border': 1,
 					'labels': True,
-					'display': 'CN,DN,date,contact,reason,location'.split(','),
+					'display': ['CN', 'date'],
 				}
 				if(os.path.exists(self.txtStampPath.text())):
 					dct['signature_appearance']['icon'] = self.txtStampPath.text()
