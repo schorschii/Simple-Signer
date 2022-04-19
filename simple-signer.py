@@ -115,6 +115,10 @@ class SimpleSignerPreviewWindow(QDialog):
 		# Window Content
 		grid = QGridLayout()
 
+		lblInstructions = QLabel(QApplication.translate('SimpleSigner', 'Please select the rectangular area where you stamp should be placed by clicking and holding the left mouse button.'))
+		lblInstructions.setWordWrap(True)
+		grid.addWidget(lblInstructions, 0, 0)
+
 		grid2 = QGridLayout()
 		label = QLabel(QApplication.translate('SimpleSigner', 'Page:'))
 		grid2.addWidget(label, 0, 0)
@@ -123,17 +127,20 @@ class SimpleSignerPreviewWindow(QDialog):
 			self.sltPage.addItem(str(i + 1))
 		self.sltPage.currentIndexChanged.connect(self.OnCurrentIndexChanged)
 		grid2.addWidget(self.sltPage, 0, 1)
-		grid.addLayout(grid2, 0, 0)
+		grid.addLayout(grid2, 1, 0)
 
 		self.lblPageView = SimpleSignerPreview()
 		self.lblPageView.setScaledContents(True)
-		self.lblPageView.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+		self.lblPageView.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblPageView.setPixmap(self.pymupixmap2qpixmap(self.pdfDocument[0].get_pixmap()))
-		grid.addWidget(self.lblPageView, 1, 0)
+		grid.addWidget(self.lblPageView, 2, 0)
 
 		self.btnDone = QPushButton(QApplication.translate('SimpleSigner', 'Done'))
+		boldFont = QFont()
+		boldFont.setBold(True)
+		self.btnDone.setFont(boldFont)
 		self.btnDone.clicked.connect(self.OnClickDone)
-		grid.addWidget(self.btnDone, 2, 0)
+		grid.addWidget(self.btnDone, 3, 0)
 
 		self.setLayout(grid)
 
@@ -262,7 +269,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
 		grid.addWidget(self.chkDrawStamp, 6, 0)
 		self.txtStampPath = QLineEdit()
-		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(optional)'))
+		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(Optional Stamp Image)'))
 		grid.addWidget(self.txtStampPath, 7, 0)
 		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChooseStampPath.clicked.connect(self.OnClickChooseStampPath)
