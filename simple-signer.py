@@ -141,6 +141,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.setMinimumSize(600, 900)
 		self.setWindowTitle(QApplication.translate('SimpleSigner', 'Place Stamp'))
 
+	# function to convert python PIL image object to QT pixmap for usage in QT controls
 	def pil2pixmap(self, image):
 		bytes_img = io.BytesIO()
 		image.save(bytes_img, format='JPEG')
@@ -148,12 +149,44 @@ class SimpleSignerPreviewWindow(QDialog):
 		qimg.loadFromData(bytes_img.getvalue())
 		return QPixmap.fromImage(qimg)
 
+	# function to convert coordinate origin from top left (QLabel logic) to bottom left (PDF logic)
+	def translateRectCoordinateOrigin(self, rectArray, maxHeight):
+		return [
+			rectArray[0],
+			maxHeight - rectArray[1] - rectArray[3],
+			rectArray[0] + rectArray[2],
+			maxHeight - rectArray[1]
+		]
+
+	# function to scale stamp rect from preview size to real PDF size
+	def translateRectToRealSize(self, rectArray, previewWidth, previewHeight, realWidth, realHeight):
+		return [
+			rectArray[0] * realWidth / previewWidth,
+			rectArray[1] * realHeight / previewHeight,
+			rectArray[2] * realWidth / previewWidth,
+			rectArray[3] * realHeight / previewHeight
+		]
+
 	def OnCurrentIndexChanged(self, index):
 		self.lblPageView.setPixmap(self.pil2pixmap(self.pages[index]))
 
 	def OnClickDone(self, e):
+		if(self.lblPageView.rect == None):
+			self.close()
+			return
+
+		normalizedRect = self.lblPageView.rect.normalized()
+		rect = [ normalizedRect.x(), normalizedRect.y(), normalizedRect.width(), normalizedRect.height() ]
+
+		print([self.lblPageView.width(), self.lblPageView.height()])
+		print(rect)
+		rect = self.translateRectCoordinateOrigin(rect, self.lblPageView.height())
+		print(rect)
+		rect = self.translateRectToRealSize(rect, self.lblPageView.width(), self.lblPageView.height(), 595, 840)
+		print(rect)
+
 		self.stampPage = self.sltPage.currentIndex()
-		self.stampRect = [self.lblPageView.rect.x(), self.lblPageView.rect.y(), self.lblPageView.rect.width(), self.lblPageView.rect.height()]
+		self.stampRect = rect
 		self.close()
 
 class SimpleSignerMainWindow(QMainWindow):
@@ -349,10 +382,6 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def Sign(self, certify):
 		try:
-			#dlg = SimpleSignerPreviewWindow(self, '/home/georg/Schreibtisch/Unbenannt 1.pdf')
-			#dlg.exec_()
-			#return
-
 			# get/compile paths
 			pdfPath = self.txtPdfPath.text()
 			signedPdfPath = self.getSignedPdfFileName()
@@ -386,7 +415,6 @@ class SimpleSignerMainWindow(QMainWindow):
 				dlg = SimpleSignerPreviewWindow(self, pdfPath)
 				dlg.exec_()
 				if(dlg.stampRect == None or dlg.stampPage == None): return
-				print(dlg.stampRect)
 				dct['signaturebox'] = dlg.stampRect
 				dct['sigpage'] = dlg.stampPage
 				dct['signature_appearance'] = {
