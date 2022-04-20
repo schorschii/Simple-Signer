@@ -1,0 +1,10 @@
+[Nemo Action]
+Name=Sign PDF
+Name[de]=PDF signieren
+Quote=double
+Exec=/usr/bin/simple-signer %F
+Icon-Name=application-pgp-signature
+Selection=single
+Extensions=nodirs;
+Separator=/#/
+Extensions=pdf;
