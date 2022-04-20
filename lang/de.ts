@@ -3,77 +3,77 @@
 <context>
     <name>SimpleSigner</name>
     <message>
-        <location filename="../simple-signer.py" line="211"/>
+        <location filename="../simple-signer.py" line="221"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="212"/>
+        <location filename="../simple-signer.py" line="222"/>
         <source>&amp;Sign</source>
         <translation>&amp;Signieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="221"/>
+        <location filename="../simple-signer.py" line="231"/>
         <source>Choose &amp;PDF File...</source>
         <translation>&amp;PDF-Datei auswählen...</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="225"/>
+        <location filename="../simple-signer.py" line="235"/>
         <source>Choose C&amp;ertificate File...</source>
         <translation>Z&amp;ertifikats-Datei auswählen...</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="230"/>
+        <location filename="../simple-signer.py" line="240"/>
         <source>&amp;Quit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="236"/>
+        <location filename="../simple-signer.py" line="246"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="238"/>
+        <location filename="../simple-signer.py" line="248"/>
         <source>&amp;About</source>
         <translation>&amp;Informationen</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="340"/>
+        <location filename="../simple-signer.py" line="357"/>
         <source>PDF File</source>
         <translation>PDF-Datei</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="274"/>
+        <location filename="../simple-signer.py" line="284"/>
         <source>Choose...</source>
         <translation>Auswählen...</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="344"/>
+        <location filename="../simple-signer.py" line="361"/>
         <source>Certificate File</source>
         <translation>Zertifikats-Datei</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="262"/>
+        <location filename="../simple-signer.py" line="272"/>
         <source>Certificate Password</source>
         <translation>Zertifikats-Passwort</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="285"/>
+        <location filename="../simple-signer.py" line="295"/>
         <source>Sign</source>
         <translation>Signieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="293"/>
+        <location filename="../simple-signer.py" line="303"/>
         <source>Certify</source>
         <translation>Zertifizieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="479"/>
+        <location filename="../simple-signer.py" line="493"/>
         <source>Open Directory</source>
         <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="481"/>
+        <location filename="../simple-signer.py" line="495"/>
         <source>Open Signed PDF</source>
         <translation>Signiertes PDF öffnen</translation>
     </message>
@@ -88,44 +88,44 @@
         <translation>Der SimpleSigner ermöglicht es Ihnen PDF-Dokumente zu signieren mit einer möglichst einfachen Oberfläche.</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="216"/>
+        <location filename="../simple-signer.py" line="226"/>
         <source>&amp;Certify</source>
         <translation>&amp;Zertifizieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="286"/>
+        <location filename="../simple-signer.py" line="296"/>
         <source>Signing allows multiple users to place their digital signature on a document.</source>
         <translation>Beim Signieren können mehrere Benutzer ihre digitale Signatur auf einem Dokument platzieren.</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="294"/>
+        <location filename="../simple-signer.py" line="304"/>
         <source>Certifiy will place your signature on the document and lock it after that.</source>
         <translation>Beim Zertifizieren wird ihre Unterschrift auf dem Dokument platziert und danach gesperrt.</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="457"/>
+        <location filename="../simple-signer.py" line="471"/>
         <source>Certificate Warning</source>
         <translation>Zertifikatswarnung</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="458"/>
+        <location filename="../simple-signer.py" line="472"/>
         <source>Your certificate expired on %s. Continue?</source>
         <translation>Ihr Zertifikat ist am %s abgelaufen. Fortfahren?</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../simple-signer.py" line="477"/>
+        <location filename="../simple-signer.py" line="491"/>
         <source>Successfully saved as »%s«.</source>
         <translation>Erfolgreich gespeichert als »%s«.</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="394"/>
         <source>File Warning</source>
-        <translation>Dateiwarnung</translation>
+        <translation type="obsolete">Dateiwarnung</translation>
     </message>
     <message encoding="UTF-8">
         <location filename="../simple-signer.py" line="395"/>
         <source>The target file »%s« already exists. Continue?</source>
-        <translation>Die Zieldatei »%s« existiert bereits. Fortfahren?</translation>
+        <translation type="obsolete">Die Zieldatei »%s« existiert bereits. Fortfahren?</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="110"/>
@@ -148,12 +148,12 @@
         <translation>Stempel platzieren</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="269"/>
+        <location filename="../simple-signer.py" line="279"/>
         <source>Draw Stamp</source>
         <translation>Stempel zeichnen</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="348"/>
+        <location filename="../simple-signer.py" line="365"/>
         <source>Stamp Image File</source>
         <translation>Stempel-Bilddatei</translation>
     </message>
@@ -163,9 +163,14 @@
         <translation>Bitte wählen Sie den rechteckigen Bereich aus, in welchem Ihr Stempel platziert werden soll, indem Sie die linke Maustaste gedrückt halten.</translation>
     </message>
     <message>
-        <location filename="../simple-signer.py" line="272"/>
+        <location filename="../simple-signer.py" line="282"/>
         <source>(Optional Stamp Image)</source>
         <translation>(Optionales Stempelbild)</translation>
+    </message>
+    <message>
+        <location filename="../simple-signer.py" line="411"/>
+        <source>Save Filename for Signed PDF</source>
+        <translation>Dateiname zum Speichern des signierten PDFs</translation>
     </message>
 </context>
 </TS>
