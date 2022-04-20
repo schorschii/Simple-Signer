@@ -397,7 +397,6 @@ class SimpleSignerMainWindow(QMainWindow):
 				if(msg.exec_() == QMessageBox.Cancel): return
 
 			# compile sign options
-			strDate = (datetime.datetime.utcnow() - datetime.timedelta(hours=12)).strftime("D:%Y%m%d%H%M%S+00'00'")
 			dct = {
 				'aligned': 0,
 				'sigflags': 3,
@@ -411,7 +410,7 @@ class SimpleSignerMainWindow(QMainWindow):
 				'contact': '',
 				'location': '',
 				'reason': '',
-				'signingdate': strDate,
+				'signingdate': datetime.datetime.now().astimezone().strftime('%Y.%m.%d %H:%M:%S %z'),
 			}
 
 			if(self.chkDrawStamp.isChecked()):
