@@ -7,12 +7,17 @@ On current Ubuntu versions, it is not possible to import personal certificates i
 As additional feature, Simple Signer allows you to draw stamps corresponding to your signature as known from the Adobe Reader.
 
 ## Installation
+### Debian Package
+You can download and install the `.deb` package from the [latest release](https://github.com/schorschii/Simple-Signer/releases) on GitHub.
+
+### Manual Installation
 ```
 apt install python3-pip python3-pyqt5 swig
 (sudo -H) pip3 install endesive PyMuPDF
 
-# move simple-signer.py into /usr/bin/simple-signer
-# move simple-signer.desktop into /usr/local/share/applications
+# copy simple-signer.py to /usr/bin/simple-signer
+# copy simple-signer.desktop into /usr/local/share/applications
+
 sudo update-desktop-database
 ```
 
