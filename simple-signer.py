@@ -102,7 +102,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		super(SimpleSignerPreviewWindow, self).__init__(parent)
 		self.pdfFilePath = pdfFilePath
 
-		# Load PDF Preview
+		# load PDF document
 		import fitz
 		from PIL.ImageQt import ImageQt
 		self.pdfDocument = fitz.open(self.pdfFilePath)
@@ -175,6 +175,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		]
 
 	def OnCurrentIndexChanged(self, index):
+		# load page preview
 		self.lblPageView.setPixmap(self.pymupixmap2qpixmap(self.pdfDocument[index].get_pixmap()))
 
 	def OnClickDone(self, e):
@@ -198,7 +199,16 @@ class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
 	CONFIG_PATH       = str(Path.home())+'/.simple-signer.ini'
 
+	config            = None
 	signedPdfPath     = None
+
+	signatureContact  = ''
+	signatureLocation = ''
+	signatureReason   = ''
+	stampBackground   = [0.75, 0.8, 0.95]
+	stampOutline      = [0.2, 0.3, 0.5]
+	stampBorder       = 1
+	stampLabels       = ['CN', 'date']
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
@@ -311,12 +321,20 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.setWindowTitle(self.PRODUCT_NAME+' v'+self.PRODUCT_VERSION)
 
 		# Defaults From Config File
+		self.config = configparser.ConfigParser()
 		if os.path.exists(self.CONFIG_PATH):
-			config = configparser.ConfigParser()
-			config.read(self.CONFIG_PATH)
-			if('cert-path' in config['settings']): self.txtCertPath.setText(config['settings']['cert-path'])
-			if('stamp-path' in config['settings']): self.txtStampPath.setText(config['settings']['stamp-path'])
-			if('draw-stamp' in config['settings']): self.chkDrawStamp.setChecked(True if config['settings']['draw-stamp']=='1' else False)
+			self.config.read(self.CONFIG_PATH)
+			if(not self.config.has_section('settings')): self.config.add_section('settings')
+			if('cert-path'  in self.config['settings']): self.txtCertPath.setText(self.config['settings']['cert-path'])
+			if('stamp-path' in self.config['settings']): self.txtStampPath.setText(self.config['settings']['stamp-path'])
+			if('draw-stamp' in self.config['settings']): self.chkDrawStamp.setChecked(True if self.config['settings']['draw-stamp']=='1' else False)
+			if('signature-contact'  in self.config['settings']): self.signatureContact  = self.config['settings']['signature-contact']
+			if('signature-location' in self.config['settings']): self.signatureLocation = self.config['settings']['signature-location']
+			if('signature-reason'   in self.config['settings']): self.signatureReason   = self.config['settings']['signature-reason']
+			if('stamp-background'   in self.config['settings']): self.stampBackground   = self.strArrayToFloatArray(self.config['settings']['stamp-background'].split(','))
+			if('stamp-outline'      in self.config['settings']): self.stampOutline      = self.strArrayToFloatArray(self.config['settings']['stamp-outline'].split(','))
+			if('stamp-border'       in self.config['settings']): self.stampBorder       = int(self.config['settings']['stamp-border'])
+			if('stamp-labels'       in self.config['settings']): self.stampLabels       = self.config['settings']['stamp-labels'].split(',')
 
 		# Defaults From Command Line
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
@@ -324,14 +342,19 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def closeEvent(self, event):
 		# Write Settings To File
-		config = configparser.ConfigParser()
-		config.add_section('settings')
-		config['settings']['cert-path'] = self.txtCertPath.text()
-		config['settings']['stamp-path'] = self.txtStampPath.text()
-		config['settings']['draw-stamp'] = '1' if self.chkDrawStamp.isChecked() else '0'
+		if(not self.config.has_section('settings')): self.config.add_section('settings')
+		self.config['settings']['cert-path'] = self.txtCertPath.text()
+		self.config['settings']['stamp-path'] = self.txtStampPath.text()
+		self.config['settings']['draw-stamp'] = '1' if self.chkDrawStamp.isChecked() else '0'
 		with open(self.CONFIG_PATH, 'w') as configfile:
-			config.write(configfile)
+			self.config.write(configfile)
 		event.accept()
+
+	def strArrayToFloatArray(self, strArray):
+		floatArray = []
+		for item in strArray:
+			floatArray.append(float(item))
+		return floatArray
 
 	def OnOpenAboutDialog(self, e):
 		dlg = SimpleSignerAboutWindow(self)
@@ -406,9 +429,9 @@ class SimpleSignerMainWindow(QMainWindow):
 				'auto_sigfield': False,
 				'sigandcertify': certify,
 				'signaturebox': (0, 0, 0, 0),
-				'contact': '',
-				'location': '',
-				'reason': '',
+				'contact': self.signatureContact,
+				'location': self.signatureLocation,
+				'reason': self.signatureReason,
 				'signingdate': datetime.datetime.now().astimezone().strftime('%Y.%m.%d %H:%M:%S %z'),
 			}
 
@@ -419,11 +442,11 @@ class SimpleSignerMainWindow(QMainWindow):
 				dct['signaturebox'] = dlg.stampRect
 				dct['sigpage'] = dlg.stampPage
 				dct['signature_appearance'] = {
-					'background': [0.75, 0.8, 0.95],
-					'outline': [0.2, 0.3, 0.5],
-					'border': 1,
+					'background': self.stampBackground,
+					'outline': self.stampOutline,
+					'border': self.stampBorder,
 					'labels': True,
-					'display': ['CN', 'date'],
+					'display': self.stampLabels,
 				}
 				if(os.path.exists(self.txtStampPath.text())):
 					dct['signature_appearance']['icon'] = self.txtStampPath.text()

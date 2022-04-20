@@ -30,6 +30,23 @@ then
   - **Certify**: places your signature and locks the document - after that, no further signature can be added
   - **Draw Stamp**: you can optionally place a visual stamp on the document which is linked to your signature
 
+## Advanced Usage / Signature Customization
+You can add the following (additional) settings to the config file `~/.simple-signer.ini`:
+```
+[settings]
+cert-path = /path/to/my/cert.p12
+stamp-path = 
+draw-stamp = 1
+
+signature-contact = Schorschii
+signature-location = Sieber Systems HQ
+signature-reason = Weils geht!
+stamp-background = 255,255,255
+stamp-outline = 255,0,0
+stamp-border = 2
+stamp-labels = CN,DN,date,contact,reason,location
+```
+
 ## Development
 ### I18n
 ```
