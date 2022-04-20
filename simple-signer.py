@@ -145,7 +145,7 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.setLayout(grid)
 
 		# Window Settings
-		self.setMinimumSize(600, 900)
+		self.setMinimumSize(400, 600)
 		self.setWindowTitle(QApplication.translate('SimpleSigner', 'Place Stamp'))
 
 	# function to convert PyMuPDF pixmap object to QT pixmap for usage in QT controls
