@@ -196,8 +196,9 @@ class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
 	PRODUCT_VERSION   = '1.4.0'
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
+	CONFIG_PATH       = str(Path.home())+'/.simple-signer.ini'
 
-	configPath = str(Path.home())+'/.simple-signer.ini'
+	signedPdfPath     = None
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
@@ -310,9 +311,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.setWindowTitle(self.PRODUCT_NAME+' v'+self.PRODUCT_VERSION)
 
 		# Defaults From Config File
-		if os.path.exists(self.configPath):
+		if os.path.exists(self.CONFIG_PATH):
 			config = configparser.ConfigParser()
-			config.read(self.configPath)
+			config.read(self.CONFIG_PATH)
 			if('cert-path' in config['settings']): self.txtCertPath.setText(config['settings']['cert-path'])
 			if('stamp-path' in config['settings']): self.txtStampPath.setText(config['settings']['stamp-path'])
 			if('draw-stamp' in config['settings']): self.chkDrawStamp.setChecked(True if config['settings']['draw-stamp']=='1' else False)
@@ -328,7 +329,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		config['settings']['cert-path'] = self.txtCertPath.text()
 		config['settings']['stamp-path'] = self.txtStampPath.text()
 		config['settings']['draw-stamp'] = '1' if self.chkDrawStamp.isChecked() else '0'
-		with open(self.configPath, 'w') as configfile:
+		with open(self.CONFIG_PATH, 'w') as configfile:
 			config.write(configfile)
 		event.accept()
 
@@ -352,26 +353,30 @@ class SimpleSignerMainWindow(QMainWindow):
 		fileName, _ = QFileDialog.getOpenFileName(self, title, None, filter)
 		return fileName
 
+	def SaveFileDialog(self, title, default, filter):
+		fileName, _ = QFileDialog.getSaveFileName(self, title, default, filter)
+		return fileName
+
 	def OnClickOpenSigned(self, e):
 		if self.existsBinary('okular'): # Okular displays signatures
-			cmd = ['okular', self.getSignedPdfFileName()]
+			cmd = ['okular', self.signedPdfPath]
 		elif self.existsBinary('libreoffice'): # LibreOffice displays signatures
-			cmd = ['libreoffice', self.getSignedPdfFileName()]
+			cmd = ['libreoffice', self.signedPdfPath]
 		elif self.existsBinary('xdg-open'): # Linux fallback
-			cmd = ['xdg-open', self.getSignedPdfFileName()]
+			cmd = ['xdg-open', self.signedPdfPath]
 		elif self.existsBinary('open'): # macOS
-			cmd = ['open', self.getSignedPdfFileName()]
+			cmd = ['open', self.signedPdfPath]
 		res = subprocess.Popen(cmd, start_new_session=True)
 
 	def OnClickOpenSignedInFileManager(self, e):
 		if self.existsBinary('nemo'): # Linux Mint
-			cmd = ['nemo', self.getSignedPdfFileName()]
+			cmd = ['nemo', self.signedPdfPath]
 		elif self.existsBinary('nautilus'): # Ubuntu
-			cmd = ['nautilus', self.getSignedPdfFileName()]
+			cmd = ['nautilus', self.signedPdfPath]
 		elif self.existsBinary('nautilus'): # Linux fallback
-			cmd = ['xdg-open', os.path.dirname(self.getSignedPdfFileName())]
+			cmd = ['xdg-open', os.path.dirname(self.signedPdfPath)]
 		elif self.existsBinary('open'): # macOS
-			cmd = ['open', os.path.dirname(self.getSignedPdfFileName())]
+			cmd = ['open', os.path.dirname(self.signedPdfPath)]
 		res = subprocess.Popen(cmd, start_new_session=True)
 
 	def OnReturnPressed(self):
@@ -387,14 +392,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		try:
 			# get/compile paths
 			pdfPath = self.txtPdfPath.text()
-			signedPdfPath = self.getSignedPdfFileName()
-			if(os.path.exists(signedPdfPath)):
-				msg = QMessageBox()
-				msg.setIcon(QMessageBox.Warning)
-				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'File Warning'))
-				msg.setText(QApplication.translate('SimpleSigner', 'The target file »%s« already exists. Continue?') % signedPdfPath)
-				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-				if(msg.exec_() == QMessageBox.Cancel): return
+			self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(), 'PDF Files (*.pdf);;All Files (*.*)')
+			if not self.signedPdfPath: return
 
 			# compile sign options
 			dct = {
@@ -432,7 +431,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			else:
 				dct['signature'] = ''
 
-			self.DoSign(pdfPath, signedPdfPath, dct)
+			self.DoSign(pdfPath, dct)
 
 		except Exception as e:
 			# error message
@@ -443,7 +442,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 
-	def DoSign(self, pdfPath, signedPdfPath, dct):
+	def DoSign(self, pdfPath, dct):
 		try:
 			# load certificate
 			certData = open(self.txtCertPath.text(), 'rb').read()
@@ -465,7 +464,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			signData = cms.sign(pdfData, dct, p12Data[0], p12Data[1], p12Data[2], 'sha256')
 
 			# save signed target PDF
-			with open(signedPdfPath, 'wb') as fp:
+			with open(self.signedPdfPath, 'wb') as fp:
 				fp.write(pdfData)
 				fp.write(signData)
 
@@ -473,7 +472,7 @@ class SimpleSignerMainWindow(QMainWindow):
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Information)
 				msg.setWindowTitle('😇')
-				msg.setText(QApplication.translate('SimpleSigner', 'Successfully saved as »%s«.') % signedPdfPath)
+				msg.setText(QApplication.translate('SimpleSigner', 'Successfully saved as »%s«.') % self.signedPdfPath)
 				msg.setStandardButtons(QMessageBox.Ok)
 				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Directory'), QMessageBox.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSignedInFileManager)
@@ -490,7 +489,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 
-	def getSignedPdfFileName(self):
+	def getDefaultSignedPdfFileName(self):
 		originalFileName = self.txtPdfPath.text()
 		if originalFileName.lower().endswith('.pdf'):
 			return originalFileName[:-4]+'-signed.pdf'
