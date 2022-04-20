@@ -5,3 +5,4 @@ Type=Application
 Comment=Sign PDF files
 Icon=application-pgp-signature
 Terminal=false
+MimeType=application/pdf;
