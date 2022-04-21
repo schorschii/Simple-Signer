@@ -197,7 +197,8 @@ class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
 	PRODUCT_VERSION   = '1.4.1'
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
-	CONFIG_PATH       = str(Path.home())+'/.simple-signer.ini'
+	CONFIG_PATH       = str(Path.home())+'/.config/Simple-Signer/settings.ini'
+	CONFIG_PATH_OLD   = str(Path.home())+'/.simple-signer.ini'
 
 	config            = None
 	signedPdfPath     = None
@@ -321,6 +322,10 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.setWindowTitle(self.PRODUCT_NAME+' v'+self.PRODUCT_VERSION)
 
 		# Defaults From Config File
+		if(not os.path.isdir(os.path.dirname(self.CONFIG_PATH))):
+			os.makedirs(os.path.dirname(self.CONFIG_PATH), exist_ok=True)
+		if(os.path.exists(self.CONFIG_PATH_OLD)):
+			os.rename(self.CONFIG_PATH_OLD, self.CONFIG_PATH)
 		self.config = configparser.ConfigParser()
 		if os.path.exists(self.CONFIG_PATH):
 			self.config.read(self.CONFIG_PATH)

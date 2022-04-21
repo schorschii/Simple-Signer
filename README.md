@@ -36,7 +36,7 @@ then
   - **Draw Stamp**: you can optionally place a visual stamp on the document which is linked to your signature
 
 ## Advanced Usage / Signature Customization
-You can add the following (additional) settings to the config file `~/.simple-signer.ini`:
+You can add the following (additional) settings to the config file `~/.config/Simple-Signer/settings.ini`:
 ```
 [settings]
 cert-path = /path/to/my/cert.p12
