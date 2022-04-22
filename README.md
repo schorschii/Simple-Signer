@@ -1,6 +1,8 @@
 # Simple Signer
 Simple Signer allows you to sign PDF files using a simple GUI.
 
+![Screenshot](.github/screenshot.png)
+
 ## But why?
 On current Ubuntu versions, it is not possible to import personal certificates into the certificate management application called "Seahorse" (see [here](https://gitlab.gnome.org/GNOME/seahorse/-/issues/232)). This prevents LibreOffice from signing PDF documents. That's why I created this workaround.
 
