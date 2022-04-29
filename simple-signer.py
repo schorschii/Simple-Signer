@@ -437,7 +437,7 @@ class SimpleSignerMainWindow(QMainWindow):
 				'contact': self.signatureContact,
 				'location': self.signatureLocation,
 				'reason': self.signatureReason,
-				'signingdate': datetime.datetime.now().astimezone().strftime('%Y.%m.%d %H:%M:%S %z'),
+				'signingdate': datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
 			}
 
 			if(self.chkDrawStamp.isChecked()):
