@@ -418,10 +418,8 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def Sign(self, certify):
 		try:
-			# get/compile paths
+			# get source path
 			pdfPath = self.txtPdfPath.text()
-			self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(), 'PDF Files (*.pdf);;All Files (*.*)')
-			if not self.signedPdfPath: return
 
 			# compile sign options
 			dct = {
@@ -459,6 +457,11 @@ class SimpleSignerMainWindow(QMainWindow):
 			else:
 				dct['signature'] = ''
 
+			# get target path
+			self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(), 'PDF Files (*.pdf);;All Files (*.*)')
+			if not self.signedPdfPath: return
+
+			# do it
 			self.DoSign(pdfPath, dct)
 
 		except Exception as e:
