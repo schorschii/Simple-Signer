@@ -386,6 +386,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		return fileName
 
 	def OnClickOpenSigned(self, e):
+		if sys.platform == 'win32': # Windows
+			subprocess.Popen([self.signedPdfPath], shell=True)
+			return
 		if self.existsBinary('okular'): # Okular displays signatures
 			cmd = ['okular', self.signedPdfPath]
 		elif self.existsBinary('libreoffice'): # LibreOffice displays signatures
@@ -397,7 +400,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		res = subprocess.Popen(cmd, start_new_session=True)
 
 	def OnClickOpenSignedInFileManager(self, e):
-		if self.existsBinary('nemo'): # Linux Mint
+		if sys.platform == 'win32': # Windows
+			cmd = ['explorer', '/select,', os.path.normpath(self.signedPdfPath)]
+		elif self.existsBinary('nemo'): # Linux Mint
 			cmd = ['nemo', self.signedPdfPath]
 		elif self.existsBinary('nautilus'): # Ubuntu
 			cmd = ['nautilus', self.signedPdfPath]
