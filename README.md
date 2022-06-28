@@ -65,3 +65,8 @@ pylupdate5 simple-signer.py -ts lang/de.ts
 # 3. Compile translation files for usage
 lrelease lang/de.ts
 ```
+
+### Compiling (on Windows)
+```
+pyinstaller.exe -F --noconsole simple-signer.py --add-data="lang/de.qm;lang" --add-data="C:\Users\vm2\AppData\Roaming\Python\Python38\site-packages\endesive\pdf\PyPDF2_annotate\fonts\Helvetica.ttf;endesive/pdf/PyPDF2_annotate/fonts"
+```
