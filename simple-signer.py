@@ -538,7 +538,9 @@ class SimpleSignerMainWindow(QMainWindow):
 def main():
 	app = QApplication(sys.argv)
 	translator = QTranslator(app)
-	if(os.path.isdir('lang')):
+	if getattr(sys, 'frozen', False):
+		translator.load(os.path.join(sys._MEIPASS, 'lang/%s.qm' % getdefaultlocale()[0]))
+	elif os.path.isdir('lang'):
 		translator.load('lang/%s.qm' % getdefaultlocale()[0])
 	else:
 		translator.load('/usr/share/simple-signer/lang/%s.qm' % getdefaultlocale()[0])
