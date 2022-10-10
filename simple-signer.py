@@ -197,7 +197,7 @@ class SimpleSignerPreviewWindow(QDialog):
 
 class SimpleSignerMainWindow(QMainWindow):
 	PRODUCT_NAME      = 'Simple Signer'
-	PRODUCT_VERSION   = '1.4.5'
+	PRODUCT_VERSION   = '1.4.6'
 	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
 	CONFIG_PATH       = str(Path.home())+'/.config/Simple-Signer/settings.ini'
 	CONFIG_PATH_OLD   = str(Path.home())+'/.simple-signer.ini'
