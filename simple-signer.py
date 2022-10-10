@@ -5,6 +5,8 @@ import sys, os, io
 import datetime
 import subprocess
 import configparser
+import json
+import traceback
 from pathlib import Path
 from shutil import which
 
@@ -374,7 +376,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		if fileName: self.txtCertPath.setText(fileName)
 
 	def OnClickChooseStampPath(self, e):
-		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Stamp Image File'), 'Image Files (*.jpg *.png);;All Files (*.*)')
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Stamp Image File'), 'Image Files (*.jpg *.png);;Stamp Manifest Files (*.stampinfo);;All Files (*.*)')
 		if fileName: self.txtStampPath.setText(fileName)
 
 	def OpenFileDialog(self, title, filter):
@@ -444,20 +446,40 @@ class SimpleSignerMainWindow(QMainWindow):
 			}
 
 			if(self.chkDrawStamp.isChecked()):
-				dlg = SimpleSignerPreviewWindow(self, pdfPath)
-				dlg.exec_()
-				if(dlg.stampRect == None or dlg.stampPage == None): return
-				dct['signaturebox'] = dlg.stampRect
-				dct['sigpage'] = dlg.stampPage
-				dct['signature_appearance'] = {
-					'background': self.stampBackground,
-					'outline': self.stampOutline,
-					'border': self.stampBorder,
-					'labels': True,
-					'display': self.stampLabels,
-				}
-				if(os.path.exists(self.txtStampPath.text())):
-					dct['signature_appearance']['icon'] = self.txtStampPath.text()
+				stampInfo = None
+				if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
+					with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
+
+				if(stampInfo == None):
+					# show dialog to draw stamp rect
+					dlg = SimpleSignerPreviewWindow(self, pdfPath)
+					dlg.exec_()
+					if(dlg.stampRect == None or dlg.stampPage == None): return
+					print('Stamp rect: ', dlg.stampRect)
+					dct['signaturebox'] = dlg.stampRect
+					dct['sigpage'] = dlg.stampPage
+					dct['signature_appearance'] = {
+						'background': self.stampBackground,
+						'outline': self.stampOutline,
+						'border': self.stampBorder,
+						'labels': True,
+						'display': self.stampLabels,
+					}
+					# use stamp image if given
+					if(os.path.exists(self.txtStampPath.text())):
+						dct['signature_appearance']['icon'] = self.txtStampPath.text()
+				else:
+					# draw stamp automatically using stamp info
+					print('Stamp rect: ', stampInfo['rect'])
+					dct['signaturebox'] = stampInfo['rect']
+					dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
+					dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
+						'background': self.stampBackground,
+						'outline': self.stampOutline,
+						'border': self.stampBorder,
+						'labels': True,
+						'display': self.stampLabels,
+					}
 
 			else:
 				dct['signature'] = ''
@@ -471,10 +493,11 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		except Exception as e:
 			# error message
+			traceback.print_exc()
 			msg = QMessageBox()
 			msg.setIcon(QMessageBox.Critical)
 			msg.setWindowTitle('😕')
-			msg.setText(str(e))
+			msg.setText(str(type(e))+': '+str(e))
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 
@@ -518,10 +541,11 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		except Exception as e:
 			# error message
+			traceback.print_exc()
 			msg = QMessageBox()
 			msg.setIcon(QMessageBox.Critical)
 			msg.setWindowTitle('😕')
-			msg.setText(str(e))
+			msg.setText(str(type(e))+': '+str(e))
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 

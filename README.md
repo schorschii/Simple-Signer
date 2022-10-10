@@ -37,6 +37,12 @@ then
   - **Certify**: places your signature and locks the document - after that, no further signature can be added
   - **Draw Stamp**: you can optionally place a visual stamp on the document which is linked to your signature
 
+## Stamp Manifest File
+Simple Signer allows to load a stamp configuration file (extension `.stampinfo` with JSON content), which contains the position and size of the stamp to draw. This feature is intended for visually impaired people who cannot draw the stamp rect themselves. Another person can create this stamp configuration file in advance, so they can sign documents of a certain type with without further help. Example `.stampinfo` file:
+```
+{"rect":[216.84396666666666, 273.77105369127514, 319.76990476190474, 312.738466442953], "page":0}
+```
+
 ## Advanced Usage / Signature Customization
 You can add the following (additional) settings to the config file `~/.config/Simple-Signer/settings.ini`:
 ```
