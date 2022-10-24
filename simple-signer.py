@@ -283,7 +283,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
 		grid.addWidget(self.chkDrawStamp, 6, 0)
 		self.txtStampPath = QLineEdit()
-		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(Optional Stamp Image)'))
+		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(Optional Stamp Image or Configuration File)'))
 		grid.addWidget(self.txtStampPath, 7, 0)
 		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChooseStampPath.clicked.connect(self.OnClickChooseStampPath)
@@ -455,7 +455,10 @@ class SimpleSignerMainWindow(QMainWindow):
 					dlg = SimpleSignerPreviewWindow(self, pdfPath)
 					dlg.exec_()
 					if(dlg.stampRect == None or dlg.stampPage == None): return
-					print('Stamp rect: ', dlg.stampRect)
+					print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
+						'rect': dlg.stampRect,
+						'page': dlg.stampPage
+					}))
 					dct['signaturebox'] = dlg.stampRect
 					dct['sigpage'] = dlg.stampPage
 					dct['signature_appearance'] = {
@@ -470,7 +473,7 @@ class SimpleSignerMainWindow(QMainWindow):
 						dct['signature_appearance']['icon'] = self.txtStampPath.text()
 				else:
 					# draw stamp automatically using stamp info
-					print('Stamp rect: ', stampInfo['rect'])
+					print('Using .stampinfo: ', stampInfo)
 					dct['signaturebox'] = stampInfo['rect']
 					dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
 					dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {

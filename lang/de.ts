@@ -164,8 +164,8 @@
     </message>
     <message>
         <location filename="../simple-signer.py" line="282"/>
-        <source>(Optional Stamp Image)</source>
-        <translation>(Optionales Stempelbild)</translation>
+        <source>(Optional Stamp Image or Configuration File)</source>
+        <translation>(Optionales Stempelbild oder Konfigurationsdatei)</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="411"/>
