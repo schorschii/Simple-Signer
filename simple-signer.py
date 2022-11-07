@@ -36,21 +36,21 @@ class SimpleSignerAboutWindow(QDialog):
 		self.layout = QVBoxLayout(self)
 
 		labelAppName = QLabel(self)
-		labelAppName.setText(self.parentWidget().PRODUCT_NAME + " v" + self.parentWidget().PRODUCT_VERSION)
-		labelAppName.setStyleSheet("font-weight:bold")
+		labelAppName.setText(self.parentWidget().PRODUCT_NAME + ' v' + self.parentWidget().PRODUCT_VERSION)
+		labelAppName.setStyleSheet('font-weight:bold')
 		labelAppName.setAlignment(Qt.AlignCenter)
 		self.layout.addWidget(labelAppName)
 
 		labelCopyright = QLabel(self)
 		labelCopyright.setText(
-			"<br>"
-			"© 2021-2022 <a href='https://georg-sieber.de'>Georg Sieber</a>"
-			"<br>"
-			"<br>"
-			"GNU General Public License v3.0"
-			"<br>"
-			"<a href='"+self.parentWidget().PRODUCT_WEBSITE+"'>"+self.parentWidget().PRODUCT_WEBSITE+"</a>"
-			"<br>"
+			'<br>'
+			'© 2021-2022 <a href=\'https://georg-sieber.de\'>Georg Sieber</a>'
+			'<br>'
+			'<br>'
+			'GNU General Public License v3.0'
+			'<br>'
+			'<a href=\''+self.parentWidget().PRODUCT_WEBSITE+'\'>'+self.parentWidget().PRODUCT_WEBSITE+'</a>'
+			'<br>'
 		)
 		labelCopyright.setOpenExternalLinks(True)
 		labelCopyright.setAlignment(Qt.AlignCenter)
@@ -59,13 +59,13 @@ class SimpleSignerAboutWindow(QDialog):
 		labelDescription = QLabel(self)
 		labelDescription.setText(
 			QApplication.translate('SimpleSigner', 'Simple-Signer allows you to to sign PDFs using a simple user interface.')
-			+"\n\n"+
+			+'\n\n'+
 			QApplication.translate('SimpleSigner', 'Signing allows multiple users to place their digital signature on a document.')
-			+"\n"+
+			+'\n'+
 			QApplication.translate('SimpleSigner', 'Certifiy will place your signature on the document and lock it after that.')
-			+"\n"
+			+'\n'
 		)
-		labelDescription.setStyleSheet("opacity:0.8")
+		labelDescription.setStyleSheet('opacity:0.8')
 		#labelDescription.setFixedWidth(400)
 		labelDescription.setWordWrap(True)
 		self.layout.addWidget(labelDescription)
