@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+# Source debconf library.
+#. /usr/share/debconf/confmodule
+
+sudo -H pip3 install --upgrade endesive==2.0.10 PyMuPDF
+
+sudo update-desktop-database
