@@ -27,10 +27,13 @@ mkdir -p simple-signer/usr/share/nemo/actions
 cp ../../simple-signer.desktop simple-signer/usr/share/applications
 cp ../../simple-signer.nemo_action simple-signer/usr/share/nemo/actions
 cp ../../lang/*.qm simple-signer/usr/share/simple-signer/lang
-cp ../../simple-signer.py simple-signer/usr/bin/simple-signer
+cp ../../simple-signer.py simple-signer/usr/share/simple-signer
+cp ../../requirements.txt simple-signer/usr/share/simple-signer
+cp ../../start-venv.sh simple-signer/usr/bin/simple-signer
 
 # set file permissions
 chown -R root:root simple-signer
+chmod 775 simple-signer/usr/share/simple-signer/simple-signer.py
 chmod 775 simple-signer/usr/bin/simple-signer
 
 # build deb

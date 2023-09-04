@@ -1,11 +1,21 @@
 #!/bin/bash
 
-# Exit on error
+# exit on error
 set -e
 
-# Source debconf library.
+# source debconf library
 #. /usr/share/debconf/confmodule
 
-sudo -H pip3 install --upgrade endesive==2.0.10 PyMuPDF
+# create system-wide venv and install python libraries via pip
+python3 -m venv /usr/share/simple-signer/venv
+source /usr/share/simple-signer/venv/bin/activate
+pip3 install --upgrade endesive==2.0.10 PyMuPDF # do not install pyqt5 via pip, we link the system package instead
 
+# link global installed python3-pyqt5 into venv - only this allows to use the current desktop theme
+cd /usr/share/simple-signer/venv/lib/python3.11/site-packages
+ln -s /usr/lib/python3/dist-packages/PyQt5/
+ln -s /usr/lib/python3/dist-packages/PyQt5-*.dist-info/
+ln -s /usr/lib/python3/dist-packages/PyQt5_sip-*.egg-info/
+
+# recognize desktop shortcut / protocol handler
 sudo update-desktop-database

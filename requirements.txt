@@ -1,0 +1,3 @@
+endesive==2.0.10
+PyMuPDF
+PyQt5
