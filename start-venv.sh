@@ -1,4 +1,3 @@
 #!/bin/bash
 
-source /usr/share/simple-signer/venv/bin/activate
-/usr/share/simple-signer/simple-signer.py
+/usr/share/simple-signer/venv/bin/python3 /usr/share/simple-signer/simple-signer.py
