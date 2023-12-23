@@ -372,7 +372,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		if fileName: self.txtPdfPath.setText(fileName)
 
 	def OnClickChooseCertPath(self, e):
-		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12);;All Files (*.*)')
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12 *.pfx);;All Files (*.*)')
 		if fileName: self.txtCertPath.setText(fileName)
 
 	def OnClickChooseStampPath(self, e):
