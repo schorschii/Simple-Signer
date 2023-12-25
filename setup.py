@@ -4,10 +4,10 @@ from setuptools import setup
 
 setup(
       name='simple_signer',
-      version='1.5.0',
+      version=__import__('simple_signer').__version__,
       description='Sign and certify PDF files on Linux with optional visual stamp using a .p12/.pfx certificate',
       install_requires=[i.strip() for i in open('requirements.txt').readlines()],
-      license='GPL-3.0',
+      license=__import__('simple_signer').__license__,
       author='Georg Sieber',
       keywords='python3 pdf sign certify certificate stamp',
       url='https://github.com/schorschii/simple-signer',

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # *-* coding: utf-8 *-*
 
+from __init__ import __title__, __version__, __website__
+
 import sys, os, io
 import datetime
 import subprocess
@@ -196,9 +198,9 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.close()
 
 class SimpleSignerMainWindow(QMainWindow):
-	PRODUCT_NAME      = 'Simple Signer'
-	PRODUCT_VERSION   = '1.5.0'
-	PRODUCT_WEBSITE   = 'https://github.com/schorschii/Simple-Signer'
+	PRODUCT_NAME      = __title__
+	PRODUCT_VERSION   = __version__
+	PRODUCT_WEBSITE   = __website__
 	CONFIG_PATH       = str(Path.home())+'/.config/Simple-Signer/settings.ini'
 	CONFIG_PATH_OLD   = str(Path.home())+'/.simple-signer.ini'
 
