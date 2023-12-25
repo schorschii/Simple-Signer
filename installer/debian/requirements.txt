@@ -1,0 +1,3 @@
+endesive==2.16.1
+PyMuPDF
+#PyQt5 # do not install QT in venv Debian package - we use the system package as dependency instead!

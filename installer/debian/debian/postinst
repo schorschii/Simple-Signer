@@ -6,5 +6,5 @@ set -e
 # source debconf library
 #. /usr/share/debconf/confmodule
 
-# remove venv
-rm -r /usr/share/simple-signer/venv
+# recognize desktop shortcut / protocol handler
+sudo update-desktop-database
