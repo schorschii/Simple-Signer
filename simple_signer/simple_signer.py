@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # *-* coding: utf-8 *-*
 
-from __init__ import __title__, __version__, __website__
+from .__init__ import __title__, __version__, __website__
 
 import sys, os, io
 import datetime
@@ -579,6 +579,3 @@ def main():
 	window.show()
 
 	sys.exit(app.exec_())
-
-if __name__ == '__main__':
-	main()
