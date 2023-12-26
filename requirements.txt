@@ -1,0 +1,7 @@
+endesive==2.16.1
+PyMuPDF
+
+# Debian package note: since python3-pyqt5 is a build-dependency and --use-system-packages is set,
+# PyQt5 will not be installed in the venv. This is important because only the system-wide PyQt installation
+# enables us to use the system theme and avoids unnessesary duplicate installation of the Qt libs on the system.
+PyQt5

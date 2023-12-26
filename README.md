@@ -14,12 +14,14 @@ You can download and install the `.deb` package from the [latest release](https:
 
 ### Manual Installation
 ```
-apt install python3-pip python3-pyqt5 swig
-(sudo -H) pip3 install endesive PyMuPDF
+apt install python3-pip python3-pyqt5 python3-venv swig
+python3 -m venv simple-signer                       # create a new venv dir
+simple-signer/bin/pip3 install -r requirements.txt  # install requirements in venv
+simple-signer/bin/pip3 install .                    # install simple-signer in venv
 
-# copy simple-signer.py to /usr/bin/simple-signer
-# copy simple-signer.desktop into /usr/local/share/applications
+simple-signer/bin/python3 -m simple_signer          # start manually
 
+cp assets/simple-signer.desktop /usr/local/share/applications
 sudo update-desktop-database
 ```
 
@@ -65,13 +67,15 @@ stamp-labels = CN,DN,date,contact,reason,location
 ## Development
 ### I18n
 ```
-# 1. Create translation files from code
+# 1. create translation files from code
 pylupdate5 simple-signer.py -ts lang/de.ts
 
-# 2. Use Qt Linguist to translate the file
+# 2. use Qt Linguist to translate the file
 
-# 3. Compile translation files for usage
-lrelease lang/de.ts
+# 3.a. compile translation files for usage
+lrelease lang/*.ts
+# 3.b. or use make to compile all
+make
 ```
 
 ### Compiling (on Windows)

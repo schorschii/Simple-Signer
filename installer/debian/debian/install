@@ -1,0 +1,5 @@
+# if there are files that need to be installed but your standard make install won't do it, put the filenames and destinations into this file
+
+../../assets/simple-signer.desktop      usr/share/applications
+../../assets/simple-signer.nemo_action  usr/share/nemo/actions
+../../lang/*.qm                         usr/share/simple-signer/lang/
