@@ -67,13 +67,15 @@ stamp-labels = CN,DN,date,contact,reason,location
 ## Development
 ### I18n
 ```
-# 1. Create translation files from code
+# 1. create translation files from code
 pylupdate5 simple-signer.py -ts lang/de.ts
 
-# 2. Use Qt Linguist to translate the file
+# 2. use Qt Linguist to translate the file
 
-# 3. Compile translation files for usage
-lrelease lang/de.ts
+# 3.a. compile translation files for usage
+lrelease lang/*.ts
+# 3.b. or use make to compile all
+make
 ```
 
 ### Compiling (on Windows)
