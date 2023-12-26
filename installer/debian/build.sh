@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
 
-# build .deb package
+# build the .deb package
 
-LANG=C dpkg-buildpackage -us -uc -b
+LANG=C dpkg-buildpackage --no-sign --build=binary
