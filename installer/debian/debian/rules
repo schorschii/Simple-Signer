@@ -9,7 +9,7 @@ export DH_VIRTUALENV_INSTALL_ROOT=/usr/share
 # * execute the Makefile in repo root to create QT translation files
 .PHONY: build
 build:
-	make ../..
+	make -C ../..
 
 # * exclude libfreetype due to dh_strip "string table error"
 .PHONY: override_dh_strip 
