@@ -33,6 +33,6 @@ sudo mkdir -p simple-signer/usr/bin
 sudo ln -sf   /usr/share/simple-signer/venv/bin/simple-signer     simple-signer/usr/bin/simple-signer
 
 # build deb
-dpkg-deb -Zxz --build simple-signer
+sudo dpkg-deb -Zxz --build simple-signer
 
 echo "Build finished"
