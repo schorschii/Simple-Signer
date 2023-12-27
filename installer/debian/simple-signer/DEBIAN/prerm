@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# exit on error
+set -e
+
+# source debconf library
+#. /usr/share/debconf/confmodule
+
+# remove venv
+rm -r /usr/share/simple-signer/build || true
+rm -r /usr/share/simple-signer/simple_signer/__pycache__  || true
+rm -r /usr/share/simple-signer/venv
+rm -r /usr/share/simple-signer/simple_signer.egg-info
