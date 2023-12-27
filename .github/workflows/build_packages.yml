@@ -8,51 +8,48 @@ on:
 
 jobs:
   create_release: # used to identify the output in other jobs
-    name: Create Release
+    name: Create Release with Debian package
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Get version name
+
+      - name: Install dependencies
+        run: sudo apt install -y python3 python3-venv python3-pip python3-setuptools python3-pyqt5 python3-cryptography python3-asn1crypto swig qttools5-dev-tools qtchooser
+
+      - name: Execute build
+        run: cd installer/debian/ && ./build.sh
+
+      - name: Get version name for Github release title
         run: echo "VERSION=Version $(python3 -c 'import simple_signer; print(simple_signer.__version__)')" >> $GITHUB_ENV
+
       - id: create_release
         name: Create Github release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this token is provided automatically by Actions with permissions declared above
+          # this token is provided automatically by Actions with permissions declared above
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          draft: true
+          draft: true # create a release draft - only the master of disaster is allowed to publish it
           prerelease: false
           release_name: ${{ env.VERSION }}
           tag_name: ${{ github.ref }}
 
-  debian_package:
-    name: Create .deb for Python 3.10 (Ubuntu 22.04)
-    needs: create_release
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install dependencies
-        run: sudo apt install -y debhelper dh-virtualenv python3 python3-cryptography python3-asn1crypto python3-virtualenv python3-pip python3-setuptools python3-pyqt5 swig qttools5-dev-tools qtchooser
-      - name: Execute build
-        run: cd installer/debian/ && ./build.sh
       - name: Get artifact
         run: |
           echo "ARTIFACT_PATH=$(find installer/ -name "*.deb")" >> $GITHUB_ENV
           echo "ARTIFACT_NAME=$(basename $(find installer/ -name "*.deb") .deb)" >> $GITHUB_ENV
+
       - name: Upload artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.ARTIFACT_PATH }}
-          asset_name: ${{ env.ARTIFACT_NAME }}_python3.10_ubuntu22.04.deb
+          asset_name: ${{ env.ARTIFACT_NAME }}.deb
           asset_content_type: application/vnd.debian.binary-package

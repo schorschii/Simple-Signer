@@ -10,13 +10,5 @@ dist/
 
 installer/windows/*.exe
 installer/macos/target/*
-installer/*.deb
-installer/*.ddeb
-installer/*.buildinfo
-installer/*.changes
-installer/debian/debian/files
-installer/debian/debian/*.log
-installer/debian/debian/*.debhelper
-installer/debian/debian/*.substvars
-installer/debian/debian/simple-signer/
-installer/debian/debian/.debhelper/
+installer/debian/*.deb
+installer/debian/simple-signer/
