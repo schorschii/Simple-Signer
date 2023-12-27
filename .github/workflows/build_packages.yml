@@ -40,7 +40,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install dependencies
-        run: sudo apt install -y debhelper dh-virtualenv python3 python3-virtualenv python3-pip python3-setuptools python3-pyqt5 swig qttools5-dev-tools qtchooser
+        run: sudo apt install -y debhelper dh-virtualenv python3 python3-cryptography python3-asn1crypto python3-virtualenv python3-pip python3-setuptools python3-pyqt5 swig qttools5-dev-tools qtchooser
       - name: Execute build
         run: cd installer/debian/ && ./build.sh
       - name: Get artifact
