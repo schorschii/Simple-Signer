@@ -11,4 +11,4 @@ dist/
 installer/windows/*.exe
 installer/macos/target/*
 installer/debian/*.deb
-installer/debian/simple-signer/
+installer/debian/simple-signer/usr
