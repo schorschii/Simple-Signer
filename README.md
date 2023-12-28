@@ -64,6 +64,9 @@ stamp-border = 2
 stamp-labels = CN,DN,date,contact,reason,location
 ```
 
+## Dark Mode
+Qt applications automatically adopt the system theme on Linux Mint (Cinnamon desktop) due to the preinstalled `qt5-gtk2-platformtheme`. For plain Ubuntu/Debian using the Gnome desktop, you need to install this package and set the environment variable `QT_QPA_PLATFORMTHEME=gtk2` before starting the app. Alternatively, you can use the package `qgnomeplatform-qt5` with the environment variable `QT_QPA_PLATFORMTHEME=gnome` (only on newer Ubuntu versions).
+
 ## Development
 ### I18n
 ```

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# exit on error
+set -e
+
+# source debconf library
+#. /usr/share/debconf/confmodule
+
+# create system-wide venv and install python libraries via pip
+python3 -m venv --system-site-packages /usr/share/simple-signer/venv
+/usr/share/simple-signer/venv/bin/pip3 install --upgrade /usr/share/simple-signer
+/usr/share/simple-signer/venv/bin/pip3 uninstall -y pip
+
+# recognize desktop shortcut / protocol handler
+sudo update-desktop-database
