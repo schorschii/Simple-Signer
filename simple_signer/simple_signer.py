@@ -432,7 +432,6 @@ class SimpleSignerMainWindow(QMainWindow):
 
 			# compile sign options
 			dct = {
-				'aligned': 0,
 				'sigflags': 3,
 				'sigflagsft': 132,
 				'sigpage': 0,
