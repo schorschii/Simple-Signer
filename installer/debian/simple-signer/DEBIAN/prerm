@@ -6,8 +6,10 @@ set -e
 # source debconf library
 #. /usr/share/debconf/confmodule
 
+DIR=/usr/share/simple-signer
+
 # remove venv
-rm -r /usr/share/simple-signer/build || true
-rm -r /usr/share/simple-signer/simple_signer/__pycache__ || true
-rm -r /usr/share/simple-signer/venv
-rm -r /usr/share/simple-signer/simple_signer.egg-info
+rm -r $DIR/build || true
+rm -r $DIR/simple_signer/__pycache__ || true
+rm -r $DIR/venv
+rm -r $DIR/simple_signer.egg-info

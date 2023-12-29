@@ -2,6 +2,8 @@
 set -e
 
 # build .deb package
+INSTALLDIR=/usr/share/simple-signer
+BUILDDIR=simple-signer
 
 # check root permissions
 if [ "$EUID" -ne 0 ] && ! groups | grep -q sudo ; then
@@ -16,23 +18,24 @@ cd "$(dirname "$0")"
 make -C ../..
 
 # empty / create necessary directories
-if [ -d "simple-signer/usr" ]; then
-    sudo rm -r simple-signer/usr
+if [ -d "$BUILDDIR/usr" ]; then
+    sudo rm -r $BUILDDIR/usr
 fi
 
 # copy files in place
-sudo install -D -m 644 ../../assets/simple-signer.desktop      -t simple-signer/usr/share/applications
-sudo install -D -m 644 ../../assets/simple-signer.nemo_action  -t simple-signer/usr/share/nemo/actions
-sudo install -D -m 644 ../../lang/*.qm                         -t simple-signer/usr/share/simple-signer/lang
-sudo install -D -m 644 ../../simple_signer/*.py                -t simple-signer/usr/share/simple-signer/simple_signer
-sudo install -D -m 644 ../../requirements.txt                  -t simple-signer/usr/share/simple-signer
-sudo install -D -m 644 ../../setup.py                          -t simple-signer/usr/share/simple-signer
-sudo install -D -m 644 ../../README.md                         -t simple-signer/usr/share/simple-signer
+sudo install -D -m 644 ../../assets/simple-signer.desktop      -t $BUILDDIR/usr/share/applications
+sudo install -D -m 644 ../../assets/simple-signer.nemo_action  -t $BUILDDIR/usr/share/nemo/actions
+sudo install -D -m 644 ../../lang/*.qm                         -t $BUILDDIR/$INSTALLDIR/lang
+sudo install -D -m 644 ../../simple_signer/*.py                -t $BUILDDIR/$INSTALLDIR/simple_signer
+sudo install -D -m 644 ../../requirements.txt                  -t $BUILDDIR/$INSTALLDIR
+sudo install -D -m 644 ../../setup.py                          -t $BUILDDIR/$INSTALLDIR
+sudo install -D -m 644 ../../README.md                         -t $BUILDDIR/$INSTALLDIR
 
-sudo mkdir -p simple-signer/usr/bin
-sudo ln -sf   /usr/share/simple-signer/venv/bin/simple-signer     simple-signer/usr/bin/simple-signer
+# make binary available in PATH
+sudo mkdir -p $BUILDDIR/usr/bin
+sudo ln -sf   $INSTALLDIR/venv/bin/simple-signer     $BUILDDIR/usr/bin/simple-signer
 
 # build deb
-sudo dpkg-deb -Zxz --build simple-signer
+sudo dpkg-deb -Zxz --build $BUILDDIR
 
 echo "Build finished"

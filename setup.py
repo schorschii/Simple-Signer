@@ -10,7 +10,7 @@ setup(
       license=__import__('simple_signer').__license__,
       author='Georg Sieber',
       keywords='python3 pdf sign certify certificate stamp',
-      url='https://github.com/schorschii/simple-signer',
+      url=__import__('simple_signer').__website__,
       classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Intended Audience :: End Users/Desktop',
@@ -23,7 +23,7 @@ setup(
       ],
       packages=['simple_signer'],
       package_data={'simple_signer': ['lang/*.qm']},
-      entry_points = {
+      entry_points={
             'gui_scripts': [
                   'simple-signer = simple_signer.simple_signer:main',
             ],
