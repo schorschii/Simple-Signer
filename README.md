@@ -15,15 +15,19 @@ You can download and install the `.deb` package from the [latest release](https:
 ### Manual Installation
 ```
 apt install python3-pip python3-pyqt5 python3-venv swig
-python3 -m venv simple-signer                       # create a new venv dir
-simple-signer/bin/pip3 install -r requirements.txt  # install requirements in venv
-simple-signer/bin/pip3 install .                    # install simple-signer in venv
+python3 -m venv --system-site-packages simple-signer  # create a new venv dir
+simple-signer/bin/pip3 install .                      # install with requirements in venv
 
-simple-signer/bin/python3 -m simple_signer          # start manually
+# start manually
+simple-signer/bin/simple-signer
 
+# install launcher shortcut
 cp assets/simple-signer.desktop /usr/local/share/applications
 sudo update-desktop-database
 ```
+
+### Dark Mode
+Qt applications automatically adopt the system theme on Linux Mint (Cinnamon desktop) due to the preinstalled `qt5-gtk2-platformtheme`. For plain Ubuntu/Debian using the Gnome desktop, you need to install this package and set the environment variable `QT_QPA_PLATFORMTHEME=gtk2` before starting the app. Alternatively, you can use the package `qgnomeplatform-qt5` with the environment variable `QT_QPA_PLATFORMTHEME=gnome` (only on newer Ubuntu versions).
 
 ## Usage
 - Start the script and choose PDF and cert file using the buttons in the GUI.
@@ -63,9 +67,6 @@ stamp-outline = 255,0,0
 stamp-border = 2
 stamp-labels = CN,DN,date,contact,reason,location
 ```
-
-## Dark Mode
-Qt applications automatically adopt the system theme on Linux Mint (Cinnamon desktop) due to the preinstalled `qt5-gtk2-platformtheme`. For plain Ubuntu/Debian using the Gnome desktop, you need to install this package and set the environment variable `QT_QPA_PLATFORMTHEME=gtk2` before starting the app. Alternatively, you can use the package `qgnomeplatform-qt5` with the environment variable `QT_QPA_PLATFORMTHEME=gnome` (only on newer Ubuntu versions).
 
 ## Development
 ### I18n
