@@ -1,11 +1,19 @@
 from distutils.command.clean import clean
 from distutils import log
 from setuptools import setup
+import os
+
+# Get the long description from the README file
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
       name='simple_signer',
       version=__import__('simple_signer').__version__,
       description='Sign and certify PDF files on Linux with optional visual stamp using a .p12/.pfx certificate',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       install_requires=[i.strip() for i in open('requirements.txt').readlines()],
       license=__import__('simple_signer').__license__,
       author='Georg Sieber',
