@@ -83,6 +83,7 @@ make
 ```
 
 ### Compiling (on Windows)
+Install the module with `pip install .`, then you can build the executable.
 ```
-pyinstaller.exe -F --noconsole simple-signer.py --add-data="lang/de.qm;lang" --add-data="C:\Users\vm2\AppData\Roaming\Python\Python38\site-packages\endesive\pdf\PyPDF2_annotate\fonts\Helvetica.ttf;endesive/pdf/PyPDF2_annotate/fonts"
+pyinstaller.exe simple-signer.windows.spec
 ```
