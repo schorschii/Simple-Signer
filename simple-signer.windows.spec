@@ -44,7 +44,7 @@ def Entrypoint(dist, group, name, **kwargs):
 
 a = Entrypoint('simple_signer', 'gui_scripts', 'simple-signer',
     datas=[
-        ('lang/de.qm', 'lang'),
+        ('lang/de.ts', 'lang'),
         (os.path.dirname(endesive.__file__)+'\\pdf\\PyPDF2_annotate\\fonts\\Helvetica.ttf', 'endesive/pdf/PyPDF2_annotate/fonts')
     ],
     win_no_prefer_redirects=False,
