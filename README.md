@@ -14,12 +14,17 @@ You can download and install the `.deb` package from the [latest release](https:
 
 ### Manual Installation
 ```
+# install system-wide dependencies from Debian/Ubuntu repos
 apt install python3-pip python3-pyqt5 python3-venv swig
-python3 -m venv --system-site-packages simple-signer  # create a new venv dir
-simple-signer/bin/pip3 install .                      # install with requirements in venv
+
+# create a new Python venv dir
+python3 -m venv --system-site-packages venv
+
+# install it with requirements which are not available in Debian/Ubuntu repos in the venv
+venv/bin/pip3 install .
 
 # start manually
-simple-signer/bin/simple-signer
+venv/bin/simple-signer
 
 # install launcher shortcut
 cp assets/simple-signer.desktop /usr/local/share/applications
