@@ -12,10 +12,15 @@ As additional features, Simple Signer allows you to certify documents (which, in
 ### Debian Package
 You can download and install the `.deb` package from the [latest release](https://github.com/schorschii/Simple-Signer/releases) on GitHub.
 
+Note: if you are on Debian 12, install `python3-oscrypto` via apt before installing the Simple Signer Debian package (the PIP oscrypto version is buggy).
+
 ### Manual Installation
 ```
 # install system-wide dependencies from Debian/Ubuntu repos
-apt install python3-pip python3-pyqt5 python3-oscrypto python3-venv swig
+apt install python3-pip python3-pyqt5 python3-pil python3-venv swig
+
+# if you are on Debian 12, install this too
+apt install python3-oscrypto
 
 # create a new Python venv dir
 python3 -m venv --system-site-packages venv
