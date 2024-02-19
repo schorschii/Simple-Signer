@@ -15,7 +15,7 @@ You can download and install the `.deb` package from the [latest release](https:
 ### Manual Installation
 ```
 # install system-wide dependencies from Debian/Ubuntu repos
-apt install python3-pip python3-pyqt5 python3-venv swig
+apt install python3-pip python3-pyqt5 python3-oscrypto python3-venv swig
 
 # create a new Python venv dir
 python3 -m venv --system-site-packages venv
