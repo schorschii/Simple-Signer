@@ -210,10 +210,10 @@ class SimpleSignerMainWindow(QMainWindow):
 	signatureContact  = ''
 	signatureLocation = ''
 	signatureReason   = ''
-	stampBackground   = [0.75, 0.8, 0.95]
-	stampOutline      = [0.2, 0.3, 0.5]
+	stampBackground   = []
+	stampOutline      = []
 	stampBorder       = 1
-	stampLabels       = ['CN', 'date']
+	stampLabels       = []
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
@@ -334,16 +334,16 @@ class SimpleSignerMainWindow(QMainWindow):
 		if os.path.exists(self.CONFIG_PATH):
 			self.config.read(self.CONFIG_PATH)
 			if(not self.config.has_section('settings')): self.config.add_section('settings')
-			if('cert-path'  in self.config['settings']): self.txtCertPath.setText(self.config['settings']['cert-path'])
-			if('stamp-path' in self.config['settings']): self.txtStampPath.setText(self.config['settings']['stamp-path'])
-			if('draw-stamp' in self.config['settings']): self.chkDrawStamp.setChecked(True if self.config['settings']['draw-stamp']=='1' else False)
-			if('signature-contact'  in self.config['settings']): self.signatureContact  = self.config['settings']['signature-contact']
-			if('signature-location' in self.config['settings']): self.signatureLocation = self.config['settings']['signature-location']
-			if('signature-reason'   in self.config['settings']): self.signatureReason   = self.config['settings']['signature-reason']
-			if('stamp-background'   in self.config['settings']): self.stampBackground   = self.strArrayToFloatArray(self.config['settings']['stamp-background'].split(','))
-			if('stamp-outline'      in self.config['settings']): self.stampOutline      = self.strArrayToFloatArray(self.config['settings']['stamp-outline'].split(','))
-			if('stamp-border'       in self.config['settings']): self.stampBorder       = int(self.config['settings']['stamp-border'])
-			if('stamp-labels'       in self.config['settings']): self.stampLabels       = self.config['settings']['stamp-labels'].split(',')
+			self.txtCertPath.setText(self.config['settings'].get('cert-path', ''))
+			self.txtStampPath.setText(self.config['settings'].get('stamp-path', ''))
+			self.chkDrawStamp.setChecked(True if self.config['settings'].get('draw-stamp','0')=='1' else False)
+			self.signatureContact  = self.config['settings'].get('signature-contact', self.signatureContact)
+			self.signatureLocation = self.config['settings'].get('signature-location', self.signatureLocation)
+			self.signatureReason   = self.config['settings'].get('signature-reason', self.signatureReason)
+			self.stampBackground   = self.strArrayToFloatArray(self.config['settings'].get('stamp-background', '0.75,0.8,0.95').split(','))
+			self.stampOutline      = self.strArrayToFloatArray(self.config['settings'].get('stamp-outline', '0.2,0.3,0.5').split(','))
+			self.stampBorder       = int(self.config['settings'].get('stamp-border', self.stampBorder))
+			self.stampLabels       = self.config['settings'].get('stamp-labels', 'CN,date').split(',')
 
 		# Defaults From Command Line
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
