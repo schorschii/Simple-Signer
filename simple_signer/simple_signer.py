@@ -210,10 +210,10 @@ class SimpleSignerMainWindow(QMainWindow):
 	signatureContact  = ''
 	signatureLocation = ''
 	signatureReason   = ''
-	stampBackground   = []
-	stampOutline      = []
+	stampBackground   = [0.75, 0.80, 0.95]
+	stampOutline      = [0.20, 0.30, 0.50]
 	stampBorder       = 1
-	stampLabels       = []
+	stampLabels       = ['CN', 'date']
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
@@ -340,10 +340,14 @@ class SimpleSignerMainWindow(QMainWindow):
 			self.signatureContact  = self.config['settings'].get('signature-contact', self.signatureContact)
 			self.signatureLocation = self.config['settings'].get('signature-location', self.signatureLocation)
 			self.signatureReason   = self.config['settings'].get('signature-reason', self.signatureReason)
-			self.stampBackground   = self.strArrayToFloatArray(self.config['settings'].get('stamp-background', '0.75,0.8,0.95').split(','))
-			self.stampOutline      = self.strArrayToFloatArray(self.config['settings'].get('stamp-outline', '0.2,0.3,0.5').split(','))
-			self.stampBorder       = int(self.config['settings'].get('stamp-border', self.stampBorder))
-			self.stampLabels       = self.config['settings'].get('stamp-labels', 'CN,date').split(',')
+			if('stamp-background' in self.config['settings']):
+				self.stampBackground = self.strArrayToFloatArray(self.config['settings']['stamp-background'].split(','))
+			if('stamp-outline' in self.config['settings']):
+				self.stampOutline = self.strArrayToFloatArray(self.config['settings']['stamp-outline'].split(','))
+			if('stamp-border' in self.config['settings']):
+				self.stampBorder = int(self.config['settings']['stamp-border'])
+			if('stamp-labels' in self.config['settings']):
+				self.stampLabels = self.config['settings']['stamp-labels'].split(',')
 
 		# Defaults From Command Line
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
