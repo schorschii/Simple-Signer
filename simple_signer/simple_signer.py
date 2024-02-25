@@ -431,6 +431,19 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def Sign(self, certify):
 		try:
+			# load certificate
+			certData = open(self.txtCertPath.text(), 'rb').read()
+			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
+
+			# check certificate
+			if(p12Data[1] != None and p12Data[1].not_valid_after < datetime.datetime.now()):
+				msg = QMessageBox()
+				msg.setIcon(QMessageBox.Warning)
+				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
+				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
+				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+				if(msg.exec_() == QMessageBox.Cancel): return
+
 			# get source path
 			pdfPath = self.txtPdfPath.text()
 
@@ -497,7 +510,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			if not self.signedPdfPath: return
 
 			# do it
-			self.DoSign(pdfPath, dct)
+			self.DoSign(pdfPath, dct, p12Data)
 
 		except Exception as e:
 			# error message
@@ -509,21 +522,8 @@ class SimpleSignerMainWindow(QMainWindow):
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 
-	def DoSign(self, pdfPath, dct):
+	def DoSign(self, pdfPath, dct, p12Data):
 		try:
-			# load certificate
-			certData = open(self.txtCertPath.text(), 'rb').read()
-			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
-
-			# check certificate
-			if(p12Data[1] != None and p12Data[1].not_valid_after < datetime.datetime.now()):
-				msg = QMessageBox()
-				msg.setIcon(QMessageBox.Warning)
-				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
-				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
-				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-				if(msg.exec_() == QMessageBox.Cancel): return
-
 			# load source PDF
 			pdfData = open(pdfPath, 'rb').read()
 
