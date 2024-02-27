@@ -1,4 +1,4 @@
-endesive==2.17.0
+endesive==2.17.1
 PyMuPDF
 
 # Debian package note: since python3-pyqt5 is a build-dependency and --use-system-packages is set,
