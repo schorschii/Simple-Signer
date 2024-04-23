@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # *-* coding: utf-8 *-*
 
-from .__init__ import __title__, __version__, __website__
+from .__init__ import __title__, __version__, __website__, __author__, __copyright__
 
 import sys, os, io
 import datetime
@@ -38,7 +38,7 @@ class SimpleSignerAboutWindow(QDialog):
 		self.layout = QVBoxLayout(self)
 
 		labelAppName = QLabel(self)
-		labelAppName.setText(self.parentWidget().PRODUCT_NAME + ' v' + self.parentWidget().PRODUCT_VERSION)
+		labelAppName.setText(__title__ + ' v' + __version__)
 		labelAppName.setStyleSheet('font-weight:bold')
 		labelAppName.setAlignment(Qt.AlignCenter)
 		self.layout.addWidget(labelAppName)
@@ -46,12 +46,12 @@ class SimpleSignerAboutWindow(QDialog):
 		labelCopyright = QLabel(self)
 		labelCopyright.setText(
 			'<br>'
-			'© 2021-2022 <a href=\'https://georg-sieber.de\'>Georg Sieber</a>'
+			+__copyright__+' <a href=\'https://georg-sieber.de\'>'+__author__+'</a>'
 			'<br>'
 			'<br>'
 			'GNU General Public License v3.0'
 			'<br>'
-			'<a href=\''+self.parentWidget().PRODUCT_WEBSITE+'\'>'+self.parentWidget().PRODUCT_WEBSITE+'</a>'
+			'<a href=\''+__website__+'\'>'+__website__+'</a>'
 			'<br>'
 		)
 		labelCopyright.setOpenExternalLinks(True)
@@ -67,7 +67,6 @@ class SimpleSignerAboutWindow(QDialog):
 			QApplication.translate('SimpleSigner', 'Certifiy will place your signature on the document and lock it after that.')
 			+'\n'
 		)
-		labelDescription.setStyleSheet('opacity:0.8')
 		#labelDescription.setFixedWidth(400)
 		labelDescription.setWordWrap(True)
 		self.layout.addWidget(labelDescription)
@@ -198,9 +197,6 @@ class SimpleSignerPreviewWindow(QDialog):
 		self.close()
 
 class SimpleSignerMainWindow(QMainWindow):
-	PRODUCT_NAME      = __title__
-	PRODUCT_VERSION   = __version__
-	PRODUCT_WEBSITE   = __website__
 	CONFIG_PATH       = str(Path.home())+'/.config/Simple-Signer/settings.ini'
 	CONFIG_PATH_OLD   = str(Path.home())+'/.simple-signer.ini'
 
@@ -323,7 +319,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		# Window Settings
 		self.setMinimumSize(400, 200)
-		self.setWindowTitle(self.PRODUCT_NAME+' v'+self.PRODUCT_VERSION)
+		self.setWindowTitle(__title__)
 
 		# Defaults From Config File
 		if(not os.path.isdir(os.path.dirname(self.CONFIG_PATH))):
