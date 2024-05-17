@@ -93,7 +93,9 @@ make
 ```
 
 ### Compiling (on Windows)
-Create a venv as described in "Manual Installation", install Simple Signer and PyInstaller into the venv (`pip install . pyinstaller`), then you can build the executable.
+Create a venv as described in "Manual Installation", install Simple Signer and PyInstaller into the venv, then you can build the executable.
 ```
+python3 -m venv venv
+venv\Scripts\pip install . pyinstaller
 venv\Scripts\pyinstaller.exe simple-signer.windows.spec
 ```
