@@ -3,6 +3,7 @@ PyMuPDF
 
 # pin pillow to <=9.5.0 as long as PyQt5 is used to avoid
 # "cannot import name 'ImageQt' from 'PIL.ImageQt'"
+# needs: libjpeg-dev zlib1g-dev
 pillow<=9.5.0
 
 # Debian package note: since python3-pyqt5 is a build-dependency and --use-system-packages is set,
