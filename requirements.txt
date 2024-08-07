@@ -1,6 +1,9 @@
 endesive==2.17.1
 PyMuPDF
 
+# manually install newest revision as long as there is no new release on PyPI (see oscrypto#78)
+oscrypto @ git+https://github.com/wbond/oscrypto.git@1547f53
+
 # pin pillow to <=9.5.0 as long as PyQt5 is used to avoid
 # "cannot import name 'ImageQt' from 'PIL.ImageQt'"
 # needs: libjpeg-dev zlib1g-dev
