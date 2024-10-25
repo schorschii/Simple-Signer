@@ -4,9 +4,9 @@ Simple Signer allows you to sign PDF files using a simple GUI.
 ![Screenshot](.github/screenshot.png)
 
 ## But why?
-On current Ubuntu versions, it is not possible to import personal certificates into the certificate management application called "Seahorse" (see [here](https://gitlab.gnome.org/GNOME/seahorse/-/issues/232)). This prevents LibreOffice from signing PDF documents. That's why I created this workaround.
+On current Ubuntu versions, it is not possible to import personal certificates into the certificate management application called "Seahorse" (see [here](https://gitlab.gnome.org/GNOME/seahorse/-/issues/232)). This prevents LibreOffice from signing PDF documents. And also Okular did not have the signing feature at the time I started the development. That's why I created this workaround.
 
-As additional features, Simple Signer allows you to certify documents (which, in contrast to signing, locks the document so no further signature is allowed) and draw stamps corresponding to your signature as known from the Adobe Reader.
+As additional features, Simple Signer allows you to certify documents (which, in contrast to signing, locks the document so no further signature is allowed) and draw stamps corresponding to your signature as known from the Adobe Reader. Simple Signer can also use Elliptic Curve certificates in constrast to recent Okular versions.
 
 ## Installation
 ### Debian Package
