@@ -25,6 +25,25 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from locale import getdefaultlocale
 
+class FileDropLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAcceptDrops(True)
+        self.setPlaceholderText(QApplication.translate('SimpleSigner','Drag and drop a file here...'))
+        
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+            
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            file_path = event.mimeData().urls()[0].toLocalFile()
+            self.setText(file_path)
+            event.acceptProposedAction()
+        else:
+            event.ignore()
 
 class SimpleSignerAboutWindow(QDialog):
 	def __init__(self, *args, **kwargs):
@@ -257,7 +276,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		self.lblPdfPath = QLabel(QApplication.translate('SimpleSigner', 'PDF File'))
 		grid.addWidget(self.lblPdfPath, 0, 0)
-		self.txtPdfPath = QLineEdit()
+		self.txtPdfPath = FileDropLineEdit()
 		grid.addWidget(self.txtPdfPath, 1, 0)
 		self.btnChoosePdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChoosePdfPath.clicked.connect(self.OnClickChoosePdfPath)
