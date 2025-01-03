@@ -4,8 +4,26 @@ import simple_signer
 import endesive
 import os
 
-
 block_cipher = None
+
+def get_optional_data():
+    data_files = []
+    
+    # Get all .qm files from the lang directory
+    lang_dir = 'lang'
+    try:
+        qm_files = [f for f in os.listdir(lang_dir) if f.endswith('.qm')][1]
+        for qm_file in qm_files:
+            full_path = os.path.join(lang_dir, qm_file)
+            if os.path.exists(full_path):
+                data_files.append((full_path, 'lang'))
+    except:
+        pass
+        
+    # Always include required files
+    data_files.append((os.path.dirname(endesive.__file__)+'\\pdf\\PyPDF2_annotate\\fonts\\Helvetica.ttf', 
+                      'endesive/pdf/PyPDF2_annotate/fonts'))
+    return data_files
 
 def Entrypoint(dist, group, name, **kwargs):
     import pkg_resources
@@ -43,10 +61,7 @@ def Entrypoint(dist, group, name, **kwargs):
     )
 
 a = Entrypoint('simple_signer', 'gui_scripts', 'simple-signer',
-    datas=[
-        ('lang/de.qm', 'lang'),
-        (os.path.dirname(endesive.__file__)+'\\pdf\\PyPDF2_annotate\\fonts\\Helvetica.ttf', 'endesive/pdf/PyPDF2_annotate/fonts')
-    ],
+    datas=get_optional_data(),
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
