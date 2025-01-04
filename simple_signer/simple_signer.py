@@ -317,6 +317,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		singleFileLayout.addLayout(singleFileInputLayout)
 		self.singleFileWidget.setLayout(singleFileLayout)
 		mainLayout.addWidget(self.singleFileWidget)
+  
+		self.btnChoosePdfPath.clicked.connect(self.OnClickChoosePdfPath)
 
 		# Multiple Files Selection Widgets
 		self.multipleFilesWidget = QWidget()
@@ -334,6 +336,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.multipleFilesWidget.setLayout(multipleFilesLayout)
 		mainLayout.addWidget(self.multipleFilesWidget)
 		self.multipleFilesWidget.hide()
+
+		self.btnChoosePdfFolder.clicked.connect(self.OnClickChoosePdfFolder)
 
 		# Connect radio buttons to handlers
 		# updateFileSelectionMode() and updateFileActions() are defined below
