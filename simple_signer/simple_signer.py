@@ -240,24 +240,38 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		# File Menu
 		fileMenu = mainMenu.addMenu(QApplication.translate('SimpleSigner', '&File'))
+
 		signAction = QAction(QApplication.translate('SimpleSigner', '&Sign'), self)
 		signAction.setShortcut('Ctrl+S')
 		signAction.triggered.connect(self.OnClickSign)
 		fileMenu.addAction(signAction)
+
 		certifyAction = QAction(QApplication.translate('SimpleSigner', '&Certify'), self)
 		certifyAction.setShortcut('Ctrl+D')
 		certifyAction.triggered.connect(self.OnClickCertify)
 		fileMenu.addAction(certifyAction)
+
 		fileMenu.addSeparator()
-		choosePdfAction = QAction(QApplication.translate('SimpleSigner', 'Choose &PDF File...'), self)
-		choosePdfAction.setShortcut('Ctrl+P')
-		choosePdfAction.triggered.connect(self.OnClickChoosePdfPath)
-		fileMenu.addAction(choosePdfAction)
+  
+		self.choosePdfAction = QAction(QApplication.translate('SimpleSigner', 'Choose &PDF File...'), self)
+		self.choosePdfAction.setShortcut('Ctrl+P')
+		self.choosePdfAction.triggered.connect(self.OnClickChoosePdfPath)
+		fileMenu.addAction(self.choosePdfAction)
+
+		self.chooseFolderAction = QAction(QApplication.translate('SimpleSigner', 'Choose &Folder...'), self)
+		self.chooseFolderAction.setShortcut('Ctrl+P')
+		self.chooseFolderAction.triggered.connect(self.OnClickChooseFolderPath)
+		fileMenu.addAction(self.chooseFolderAction)
+		# Initially hide the folder action
+		self.chooseFolderAction.setVisible(False)
+    
 		chooseCertificateAction = QAction(QApplication.translate('SimpleSigner', 'Choose C&ertificate File...'), self)
 		chooseCertificateAction.setShortcut('Ctrl+O')
 		chooseCertificateAction.triggered.connect(self.OnClickChooseCertPath)
 		fileMenu.addAction(chooseCertificateAction)
+  
 		fileMenu.addSeparator()
+  
 		quitAction = QAction(QApplication.translate('SimpleSigner', '&Quit'), self)
 		quitAction.setShortcut('Ctrl+Q')
 		quitAction.triggered.connect(self.close)
@@ -271,75 +285,148 @@ class SimpleSignerMainWindow(QMainWindow):
 		aboutAction.triggered.connect(self.OnOpenAboutDialog)
 		editMenu.addAction(aboutAction)
 
-		# Window Content
-		grid = QGridLayout()
+		# Main window layout
+  
+		mainLayout = QVBoxLayout()
 
+		# File Selection Mode Widgets
+		radioLayout = QHBoxLayout()
+		self.radioSingleFile = QRadioButton(QApplication.translate('SimpleSigner', 'Single File'))
+		self.radioMultipleFiles = QRadioButton(QApplication.translate('SimpleSigner', 'Multiple Files'))
+		self.radioSingleFile.setChecked(True)
+		
+		radioLayout.addStretch()
+		radioLayout.addWidget(self.radioSingleFile)
+		radioLayout.addWidget(self.radioMultipleFiles)
+		radioLayout.addStretch()
+  
+		mainLayout.addLayout(radioLayout)
+
+		# Single File Selection Widgets
+		self.singleFileWidget = QWidget()
+		singleFileLayout = QVBoxLayout()
 		self.lblPdfPath = QLabel(QApplication.translate('SimpleSigner', 'PDF File'))
-		grid.addWidget(self.lblPdfPath, 0, 0)
+		singleFileInputLayout = QHBoxLayout()
 		self.txtPdfPath = FileDropLineEdit()
-		grid.addWidget(self.txtPdfPath, 1, 0)
 		self.btnChoosePdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
-		self.btnChoosePdfPath.clicked.connect(self.OnClickChoosePdfPath)
-		grid.addWidget(self.btnChoosePdfPath, 1, 1)
+		self.btnChoosePdfPath.setFixedWidth(80)
+  
+		singleFileLayout.addWidget(self.lblPdfPath)
+		singleFileInputLayout.addWidget(self.txtPdfPath)
+		singleFileInputLayout.addWidget(self.btnChoosePdfPath)
+		singleFileLayout.addLayout(singleFileInputLayout)
+		self.singleFileWidget.setLayout(singleFileLayout)
+		mainLayout.addWidget(self.singleFileWidget)
 
+		# Multiple Files Selection Widgets
+		self.multipleFilesWidget = QWidget()
+		multipleFilesLayout = QVBoxLayout()
+		self.lblPdfFolder = QLabel(QApplication.translate('SimpleSigner', 'PDF Folder'))
+		multipleFilesInputLayout = QHBoxLayout()
+		self.txtPdfFolder = QLineEdit()
+		self.btnChoosePdfFolder = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChoosePdfFolder.setFixedWidth(80)
+
+		multipleFilesLayout.addWidget(self.lblPdfFolder)
+		multipleFilesInputLayout.addWidget(self.txtPdfFolder)
+		multipleFilesInputLayout.addWidget(self.btnChoosePdfFolder)
+		multipleFilesLayout.addLayout(multipleFilesInputLayout)
+		self.multipleFilesWidget.setLayout(multipleFilesLayout)
+		mainLayout.addWidget(self.multipleFilesWidget)
+		self.multipleFilesWidget.hide()
+
+		# Connect radio buttons to handlers
+		# updateFileSelectionMode() and updateFileActions() are defined below
+		self.radioSingleFile.toggled.connect(self.updateFileSelectionMode)
+		self.radioMultipleFiles.toggled.connect(self.updateFileSelectionMode)  
+		self.radioSingleFile.toggled.connect(lambda checked: self.updateFileActions(checked))
+
+		# Certificate Widgets
+		self.certWidget = QWidget()
+		certLayout = QVBoxLayout()
 		self.lblCertPath = QLabel(QApplication.translate('SimpleSigner', 'Certificate File'))
-		grid.addWidget(self.lblCertPath, 2, 0)
+		certInputLayout = QHBoxLayout()
 		self.txtCertPath = QLineEdit()
-		grid.addWidget(self.txtCertPath, 3, 0)
 		self.btnChooseCertPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChooseCertPath.setFixedWidth(80)
 		self.btnChooseCertPath.clicked.connect(self.OnClickChooseCertPath)
-		grid.addWidget(self.btnChooseCertPath, 3, 1)
 
+		certLayout.addWidget(self.lblCertPath)
+		certInputLayout.addWidget(self.txtCertPath)
+		certInputLayout.addWidget(self.btnChooseCertPath)
+		certLayout.addLayout(certInputLayout)
+		self.certWidget.setLayout(certLayout)
+		mainLayout.addWidget(self.certWidget)
+
+		# Password Widgets
+		self.passWidget = QWidget()
+		passLayout = QVBoxLayout()
 		self.lblPassword = QLabel(QApplication.translate('SimpleSigner', 'Certificate Password'))
-		grid.addWidget(self.lblPassword, 4, 0)
 		self.txtCertPassword = QLineEdit()
 		self.txtCertPassword.setEchoMode(QLineEdit.Password)
 		self.txtCertPassword.returnPressed.connect(self.OnReturnPressed)
-		grid.addWidget(self.txtCertPassword, 5, 0)
 
+		passLayout.addWidget(self.lblPassword)
+		passLayout.addWidget(self.txtCertPassword)
+		self.passWidget.setLayout(passLayout)
+		mainLayout.addWidget(self.passWidget)
+
+		# Stamp Widgets
+		self.stampWidget = QWidget()
+		stampLayout = QVBoxLayout()
 		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
-		grid.addWidget(self.chkDrawStamp, 6, 0)
+		stampInputLayout = QHBoxLayout()
 		self.txtStampPath = QLineEdit()
 		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(Optional Stamp Image or Configuration File)'))
-		grid.addWidget(self.txtStampPath, 7, 0)
 		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
+		self.btnChooseStampPath.setFixedWidth(80)
 		self.btnChooseStampPath.clicked.connect(self.OnClickChooseStampPath)
-		grid.addWidget(self.btnChooseStampPath, 7, 1)
 
+		stampLayout.addWidget(self.chkDrawStamp)
+		stampInputLayout.addWidget(self.txtStampPath)
+		stampInputLayout.addWidget(self.btnChooseStampPath)
+		stampLayout.addLayout(stampInputLayout)
+		self.stampWidget.setLayout(stampLayout)
+		mainLayout.addWidget(self.stampWidget)
+  
+		# Separator Line Widget
 		line = QFrame()
 		line.setFrameShape(QFrame.HLine)
 		line.setFrameShadow(QFrame.Sunken)
-		grid.addWidget(line, 8, 0)
+		mainLayout.addWidget(line)
 
-		grid2 = QGridLayout()
+		# Action Buttons Layout
+		buttonLayout = QHBoxLayout()
 
 		self.btnSign = QPushButton(QApplication.translate('SimpleSigner', 'Sign'))
-		self.btnSign.setToolTip(QApplication.translate('SimpleSigner', 'Signing allows multiple users to place their digital signature on a document.'));
+		self.btnSign.setToolTip(QApplication.translate('SimpleSigner', 'Signing allows multiple users to place their digital signature on a document.'))
 		boldFont = QFont()
 		boldFont.setBold(True)
 		self.btnSign.setFont(boldFont)
 		self.btnSign.clicked.connect(self.OnClickSign)
-		grid2.addWidget(self.btnSign, 0, 0)
 
 		self.btnCertfiy = QPushButton(QApplication.translate('SimpleSigner', 'Certify'))
-		self.btnCertfiy.setToolTip(QApplication.translate('SimpleSigner', 'Certifiy will place your signature on the document and lock it after that.'));
-		boldFont = QFont()
-		boldFont.setBold(True)
+		self.btnCertfiy.setToolTip(QApplication.translate('SimpleSigner', 'Certify will place your signature on the document and lock it after that.'))
 		self.btnCertfiy.setFont(boldFont)
 		self.btnCertfiy.clicked.connect(self.OnClickCertify)
-		grid2.addWidget(self.btnCertfiy, 0, 1)
 
-		grid.addLayout(grid2, 9, 0)
+		buttonLayout.addStretch()
+		buttonLayout.addWidget(self.btnSign)
+		buttonLayout.addWidget(self.btnCertfiy)
+		buttonLayout.addStretch()
 
+		mainLayout.addLayout(buttonLayout)
+
+		# Set up the main widget
 		widget = QWidget(self)
-		widget.setLayout(grid)
+		widget.setLayout(mainLayout)
 		self.setCentralWidget(widget)
 		self.txtCertPassword.setFocus()
 
 		# Window Settings
-		self.setMinimumSize(400, 200)
+		self.setMinimumSize(400, 300)
 		self.setWindowTitle(__title__)
-
+  
 		# Defaults From Config File
 		if(not os.path.isdir(os.path.dirname(self.CONFIG_PATH))):
 			os.makedirs(os.path.dirname(self.CONFIG_PATH), exist_ok=True)
@@ -368,6 +455,14 @@ class SimpleSignerMainWindow(QMainWindow):
 		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
 		if len(sys.argv) > 2: self.txtCertPath.setText(sys.argv[2])
 
+	def updateFileSelectionMode(self):
+		if self.radioSingleFile.isChecked():
+			self.singleFileWidget.show()
+			self.multipleFilesWidget.hide()
+		else:
+			self.singleFileWidget.hide()
+			self.multipleFilesWidget.show()
+
 	def closeEvent(self, event):
 		# Write Settings To File
 		if(not self.config.has_section('settings')): self.config.add_section('settings')
@@ -391,6 +486,14 @@ class SimpleSignerMainWindow(QMainWindow):
 	def OnClickChoosePdfPath(self, e):
 		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'PDF File'), 'PDF Files (*.pdf);;All Files (*.*)')
 		if fileName: self.txtPdfPath.setText(fileName)
+  
+	def OnClickChooseFolderPath(self, e):
+		folderName = QFileDialog.getExistingDirectory(self,	QApplication.translate('SimpleSigner', 'Select PDF Folder'), "", QFileDialog.ShowDirsOnly)
+		if folderName: self.txtPdfFolder.setText(folderName)
+
+	def updateFileActions(self, isSingleFile):
+		self.choosePdfAction.setVisible(isSingleFile)
+		self.chooseFolderAction.setVisible(not isSingleFile)
 
 	def OnClickChooseCertPath(self, e):
 		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12 *.pfx);;All Files (*.*)')
@@ -445,6 +548,13 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.Sign(True)
 
 	def Sign(self, certify):
+		if self.radioMultipleFiles.isChecked():
+			self.processMultipleFiles(certify)
+   
+		else:
+			self.SignProcess(certify)	
+
+	def SignProcess(self, certify):
 		try:
 			# load certificate
 			certData = open(self.txtCertPath.text(), 'rb').read()
@@ -462,63 +572,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			# get source path
 			pdfPath = self.txtPdfPath.text()
 
-			# compile sign options
-			dct = {
-				'sigflags': 3,
-				'sigflagsft': 132,
-				'sigpage': 0,
-				'sigbutton': False,
-				'sigfield': 'Signature-'+str(datetime.datetime.utcnow().timestamp()),
-				'auto_sigfield': False,
-				'sigandcertify': certify,
-				'signaturebox': (0, 0, 0, 0),
-				'contact': self.signatureContact,
-				'location': self.signatureLocation,
-				'reason': self.signatureReason,
-				'signingdate': datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
-			}
-
-			if(self.chkDrawStamp.isChecked()):
-				stampInfo = None
-				if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
-					with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
-
-				if(stampInfo == None):
-					# show dialog to draw stamp rect
-					dlg = SimpleSignerPreviewWindow(self, pdfPath)
-					dlg.exec_()
-					if(dlg.stampRect == None or dlg.stampPage == None): return
-					print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
-						'rect': dlg.stampRect,
-						'page': dlg.stampPage
-					}))
-					dct['signaturebox'] = dlg.stampRect
-					dct['sigpage'] = dlg.stampPage
-					dct['signature_appearance'] = {
-						'background': self.stampBackground,
-						'outline': self.stampOutline,
-						'border': self.stampBorder,
-						'labels': True,
-						'display': self.stampLabels,
-					}
-					# use stamp image if given
-					if(os.path.exists(self.txtStampPath.text())):
-						dct['signature_appearance']['icon'] = self.txtStampPath.text()
-				else:
-					# draw stamp automatically using stamp info
-					print('Using .stampinfo: ', stampInfo)
-					dct['signaturebox'] = stampInfo['rect']
-					dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
-					dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
-						'background': self.stampBackground,
-						'outline': self.stampOutline,
-						'border': self.stampBorder,
-						'labels': True,
-						'display': self.stampLabels,
-					}
-
-			else:
-				dct['signature'] = ''
+			dct = self.prepareDct(certify, pdfPath)
 
 			# get target path
 			self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(), 'PDF Files (*.pdf);;All Files (*.*)')
@@ -536,6 +590,68 @@ class SimpleSignerMainWindow(QMainWindow):
 			msg.setText(str(type(e))+': '+str(e))
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
+
+	def prepareDct(self, certify, pdfPath=None):
+     
+		# compile sign options
+		dct = {
+			'sigflags': 3,
+			'sigflagsft': 132,
+			'sigpage': 0,
+			'sigbutton': False,
+			'sigfield': 'Signature-'+str(datetime.datetime.utcnow().timestamp()),
+			'auto_sigfield': False,
+			'sigandcertify': certify,
+			'signaturebox': (0, 0, 0, 0),
+			'contact': self.signatureContact,
+			'location': self.signatureLocation,
+			'reason': self.signatureReason,
+			'signingdate': datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
+		}
+
+		if(self.chkDrawStamp.isChecked()):
+			stampInfo = None
+			if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
+				with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
+
+			if(stampInfo == None):
+				# show dialog to draw stamp rect
+				dlg = SimpleSignerPreviewWindow(self, pdfPath)
+				dlg.exec_()
+				if(dlg.stampRect == None or dlg.stampPage == None): return
+				print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
+					'rect': dlg.stampRect,
+					'page': dlg.stampPage
+				}))
+				dct['signaturebox'] = dlg.stampRect
+				dct['sigpage'] = dlg.stampPage
+				dct['signature_appearance'] = {
+					'background': self.stampBackground,
+					'outline': self.stampOutline,
+					'border': self.stampBorder,
+					'labels': True,
+					'display': self.stampLabels,
+				}
+				# use stamp image if given
+				if(os.path.exists(self.txtStampPath.text())):
+					dct['signature_appearance']['icon'] = self.txtStampPath.text()
+			else:
+				# draw stamp automatically using stamp info
+				print('Using .stampinfo: ', stampInfo)
+				dct['signaturebox'] = stampInfo['rect']
+				dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
+				dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
+					'background': self.stampBackground,
+					'outline': self.stampOutline,
+					'border': self.stampBorder,
+					'labels': True,
+					'display': self.stampLabels,
+				}
+
+		else:
+			dct['signature'] = ''
+   
+		return dct
 
 	def DoSign(self, pdfPath, dct, p12Data):
 		try:
@@ -581,6 +697,33 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def existsBinary(self, name):
 		return which(name) is not None
+
+	def OnClickChoosePdfFolder(self, e):
+		folderPath = QFileDialog.getExistingDirectory(self, 
+			QApplication.translate('SimpleSigner', 'Select PDF Folder'))
+		if folderPath:
+			self.txtPdfFolder.setText(folderPath)
+
+	def processMultipleFiles(self, certify):
+		folder = self.txtPdfFolder.text()
+		if not folder:
+			msg = QMessageBox()
+			msg.setIcon(QMessageBox.Warning)
+			msg.setText(QApplication.translate('SimpleSigner', 'Please select a folder'))
+			msg.exec_()
+			return
+
+		pdf_files = [f for f in os.listdir(folder) if f.lower().endswith('.pdf')]
+		if not pdf_files:
+			msg = QMessageBox()
+			msg.setIcon(QMessageBox.Warning)
+			msg.setText(QApplication.translate('SimpleSigner', 'No PDF files found in the selected folder'))
+			msg.exec_()
+			return
+
+		for pdf_file in pdf_files:
+			self.txtPdfPath.setText(os.path.join(folder, pdf_file))
+			self.SignProcess(certify)
 
 def main():
 	app = QApplication(sys.argv)
