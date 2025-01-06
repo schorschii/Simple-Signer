@@ -90,7 +90,7 @@
     </message>
     <message>
         <location filename="../simple_signer/simple_signer.py" line="487"/>
-        <source>PDF File</source>
+        <source>PDF File(s)</source>
         <translation>Fichero PDF</translation>
     </message>
     <message>
@@ -167,26 +167,6 @@
         <location filename="../simple_signer/simple_signer.py" line="32"/>
         <source>Drag &amp; drop a file here...</source>
         <translation>Arrastre y Suelte un fichero aquí...</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="261"/>
-        <source>Choose &amp;Folder...</source>
-        <translation>Seleccione &amp;Directorio...</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="294"/>
-        <source>Single File</source>
-        <translation>Fichero Individual</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="295"/>
-        <source>Multiple Files</source>
-        <translation>Múltiples Ficheros</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="324"/>
-        <source>PDF Folder</source>
-        <translation>Directorio PDF</translation>
     </message>
 </context>
 </TS>
