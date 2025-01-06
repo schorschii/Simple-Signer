@@ -9,8 +9,6 @@ import subprocess
 import configparser
 import json
 import traceback
-import ctypes
-import locale
 from pathlib import Path
 from shutil import which
 
@@ -25,47 +23,8 @@ if os.environ.get('QT_QPA_PLATFORMTHEME') == 'qt5ct':
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from locale import getdefaultlocale
 
-class FileDropLineEdit(QLineEdit):
-	def __init__(self, parent=None):
-		super().__init__(parent)
-		self.setAcceptDrops(True)
-		self.setPlaceholderText(QApplication.translate('SimpleSigner','Drag & drop a file here...'))
-
-	def dragEnterEvent(self, event):
-		if event.mimeData().hasUrls():
-			event.acceptProposedAction()
-		else:
-			event.ignore()
-
-	def dropEvent(self, event):
-		if event.mimeData().hasUrls():
-			file_path = event.mimeData().urls()[0].toLocalFile()
-			self.setText(file_path)
-			event.acceptProposedAction()
-		else:
-			event.ignore()
-
-class FileDropTextEdit(QTextEdit):
-	def __init__(self, parent=None):
-		super().__init__(parent)
-		self.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
-		self.setAcceptDrops(True)
-		self.setPlaceholderText(QApplication.translate('SimpleSigner','Drag & drop a file here...'))
-
-	def dragEnterEvent(self, event):
-		if event.mimeData().hasUrls():
-			event.acceptProposedAction()
-		else:
-			event.ignore()
-
-	def dropEvent(self, event):
-		if event.mimeData().hasUrls():
-			for arg in event.mimeData().urls():
-				self.setText(self.toPlainText()+arg.toLocalFile()+"\n")
-			event.acceptProposedAction()
-		else:
-			event.ignore()
 
 class SimpleSignerAboutWindow(QDialog):
 	def __init__(self, *args, **kwargs):
@@ -296,9 +255,9 @@ class SimpleSignerMainWindow(QMainWindow):
 		# Window Content
 		grid = QGridLayout()
 
-		self.lblPdfPath = QLabel(QApplication.translate('SimpleSigner', 'PDF File(s)'))
+		self.lblPdfPath = QLabel(QApplication.translate('SimpleSigner', 'PDF File'))
 		grid.addWidget(self.lblPdfPath, 0, 0)
-		self.txtPdfPath = FileDropTextEdit()
+		self.txtPdfPath = QLineEdit()
 		grid.addWidget(self.txtPdfPath, 1, 0)
 		self.btnChoosePdfPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChoosePdfPath.clicked.connect(self.OnClickChoosePdfPath)
@@ -306,7 +265,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		self.lblCertPath = QLabel(QApplication.translate('SimpleSigner', 'Certificate File'))
 		grid.addWidget(self.lblCertPath, 2, 0)
-		self.txtCertPath = FileDropLineEdit()
+		self.txtCertPath = QLineEdit()
 		grid.addWidget(self.txtCertPath, 3, 0)
 		self.btnChooseCertPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
 		self.btnChooseCertPath.clicked.connect(self.OnClickChooseCertPath)
@@ -321,7 +280,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 		self.chkDrawStamp = QCheckBox(QApplication.translate('SimpleSigner', 'Draw Stamp'))
 		grid.addWidget(self.chkDrawStamp, 6, 0)
-		self.txtStampPath = FileDropLineEdit()
+		self.txtStampPath = QLineEdit()
 		self.txtStampPath.setPlaceholderText(QApplication.translate('SimpleSigner', '(Optional Stamp Image or Configuration File)'))
 		grid.addWidget(self.txtStampPath, 7, 0)
 		self.btnChooseStampPath = QPushButton(QApplication.translate('SimpleSigner', 'Choose...'))
@@ -359,8 +318,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.txtCertPassword.setFocus()
 
 		# Window Settings
-		self.setMinimumSize(400, 250)
-		self.resize(400, 350)
+		self.setMinimumSize(400, 200)
 		self.setWindowTitle(__title__)
 
 		# Defaults From Config File
@@ -388,8 +346,8 @@ class SimpleSignerMainWindow(QMainWindow):
 				self.stampLabels = self.config['settings']['stamp-labels'].split(',')
 
 		# Defaults From Command Line
-		for arg in sys.argv[1:]:
-			self.txtPdfPath.setText(self.txtPdfPath.toPlainText()+arg+"\n")
+		if len(sys.argv) > 1: self.txtPdfPath.setText(sys.argv[1])
+		if len(sys.argv) > 2: self.txtCertPath.setText(sys.argv[2])
 
 	def closeEvent(self, event):
 		# Write Settings To File
@@ -412,8 +370,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		dlg.exec_()
 
 	def OnClickChoosePdfPath(self, e):
-		fileNames = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'PDF File'), 'PDF Files (*.pdf);;All Files (*.*)', True)
-		if fileNames: self.txtPdfPath.setText("\n".join(fileNames))
+		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'PDF File'), 'PDF Files (*.pdf);;All Files (*.*)')
+		if fileName: self.txtPdfPath.setText(fileName)
 
 	def OnClickChooseCertPath(self, e):
 		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Certificate File'), 'Certificate Files (*.p12 *.pfx);;All Files (*.*)')
@@ -423,11 +381,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		fileName = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'Stamp Image File'), 'Image Files (*.jpg *.png);;Stamp Manifest Files (*.stampinfo);;All Files (*.*)')
 		if fileName: self.txtStampPath.setText(fileName)
 
-	def OpenFileDialog(self, title, filter, multiple=False):
-		if(multiple):
-			fileName, _ = QFileDialog.getOpenFileNames(self, title, None, filter)
-		else:
-			fileName, _ = QFileDialog.getOpenFileName(self, title, None, filter)
+	def OpenFileDialog(self, title, filter):
+		fileName, _ = QFileDialog.getOpenFileName(self, title, None, filter)
 		return fileName
 
 	def SaveFileDialog(self, title, default, filter):
@@ -486,73 +441,72 @@ class SimpleSignerMainWindow(QMainWindow):
 				if(msg.exec_() == QMessageBox.Cancel): return
 
 			# get source path
-			for pdfPath in self.txtPdfPath.toPlainText().split("\n"):
-				if(pdfPath.strip() == ''): continue
+			pdfPath = self.txtPdfPath.text()
 
-				# compile sign options
-				dct = {
-					'sigflags': 3,
-					'sigflagsft': 132,
-					'sigpage': 0,
-					'sigbutton': False,
-					'sigfield': 'Signature-'+str(datetime.datetime.utcnow().timestamp()),
-					'auto_sigfield': False,
-					'sigandcertify': certify,
-					'signaturebox': (0, 0, 0, 0),
-					'contact': self.signatureContact,
-					'location': self.signatureLocation,
-					'reason': self.signatureReason,
-					'signingdate': datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
-				}
+			# compile sign options
+			dct = {
+				'sigflags': 3,
+				'sigflagsft': 132,
+				'sigpage': 0,
+				'sigbutton': False,
+				'sigfield': 'Signature-'+str(datetime.datetime.utcnow().timestamp()),
+				'auto_sigfield': False,
+				'sigandcertify': certify,
+				'signaturebox': (0, 0, 0, 0),
+				'contact': self.signatureContact,
+				'location': self.signatureLocation,
+				'reason': self.signatureReason,
+				'signingdate': datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
+			}
 
-				if(self.chkDrawStamp.isChecked()):
-					stampInfo = None
-					if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
-						with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
+			if(self.chkDrawStamp.isChecked()):
+				stampInfo = None
+				if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
+					with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
 
-					if(stampInfo == None):
-						# show dialog to draw stamp rect
-						dlg = SimpleSignerPreviewWindow(self, pdfPath)
-						dlg.exec_()
-						if(dlg.stampRect == None or dlg.stampPage == None): return
-						print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
-							'rect': dlg.stampRect,
-							'page': dlg.stampPage
-						}))
-						dct['signaturebox'] = dlg.stampRect
-						dct['sigpage'] = dlg.stampPage
-						dct['signature_appearance'] = {
-							'background': self.stampBackground,
-							'outline': self.stampOutline,
-							'border': self.stampBorder,
-							'labels': True,
-							'display': self.stampLabels,
-						}
-						# use stamp image if given
-						if(os.path.exists(self.txtStampPath.text())):
-							dct['signature_appearance']['icon'] = self.txtStampPath.text()
-					else:
-						# draw stamp automatically using stamp info
-						print('Using .stampinfo: ', stampInfo)
-						dct['signaturebox'] = stampInfo['rect']
-						dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
-						dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
-							'background': self.stampBackground,
-							'outline': self.stampOutline,
-							'border': self.stampBorder,
-							'labels': True,
-							'display': self.stampLabels,
-						}
-
+				if(stampInfo == None):
+					# show dialog to draw stamp rect
+					dlg = SimpleSignerPreviewWindow(self, pdfPath)
+					dlg.exec_()
+					if(dlg.stampRect == None or dlg.stampPage == None): return
+					print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
+						'rect': dlg.stampRect,
+						'page': dlg.stampPage
+					}))
+					dct['signaturebox'] = dlg.stampRect
+					dct['sigpage'] = dlg.stampPage
+					dct['signature_appearance'] = {
+						'background': self.stampBackground,
+						'outline': self.stampOutline,
+						'border': self.stampBorder,
+						'labels': True,
+						'display': self.stampLabels,
+					}
+					# use stamp image if given
+					if(os.path.exists(self.txtStampPath.text())):
+						dct['signature_appearance']['icon'] = self.txtStampPath.text()
 				else:
-					dct['signature'] = ''
+					# draw stamp automatically using stamp info
+					print('Using .stampinfo: ', stampInfo)
+					dct['signaturebox'] = stampInfo['rect']
+					dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
+					dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
+						'background': self.stampBackground,
+						'outline': self.stampOutline,
+						'border': self.stampBorder,
+						'labels': True,
+						'display': self.stampLabels,
+					}
 
-				# get target path
-				self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(pdfPath), 'PDF Files (*.pdf);;All Files (*.*)')
-				if not self.signedPdfPath: return
+			else:
+				dct['signature'] = ''
 
-				# do it
-				self.DoSign(pdfPath, dct, p12Data)
+			# get target path
+			self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(), 'PDF Files (*.pdf);;All Files (*.*)')
+			if not self.signedPdfPath: return
+
+			# do it
+			self.DoSign(pdfPath, dct, p12Data)
 
 		except Exception as e:
 			# error message
@@ -599,7 +553,8 @@ class SimpleSignerMainWindow(QMainWindow):
 			msg.setStandardButtons(QMessageBox.Ok)
 			retval = msg.exec_()
 
-	def getDefaultSignedPdfFileName(self, originalFileName):
+	def getDefaultSignedPdfFileName(self):
+		originalFileName = self.txtPdfPath.text()
 		if originalFileName.lower().endswith('.pdf'):
 			return originalFileName[:-4]+'-signed.pdf'
 		else:
@@ -608,23 +563,15 @@ class SimpleSignerMainWindow(QMainWindow):
 	def existsBinary(self, name):
 		return which(name) is not None
 
-def get_os_language():
-	if os.name == 'nt':
-		windll = ctypes.windll.kernel32
-		return locale.windows_locale[ windll.GetUserDefaultUILanguage() ][0:2]
-	else:
-		return locale.getlocale()[0][0:2]
-
 def main():
 	app = QApplication(sys.argv)
 	translator = QTranslator(app)
-	langCode = get_os_language()
 	if getattr(sys, 'frozen', False):
-		translator.load(os.path.join(sys._MEIPASS, 'lang/%s.qm' % langCode))
+		translator.load(os.path.join(sys._MEIPASS, 'lang/%s.qm' % getdefaultlocale()[0]))
 	elif os.path.isdir('lang'):
-		translator.load('lang/%s.qm' % langCode)
+		translator.load('lang/%s.qm' % getdefaultlocale()[0])
 	else:
-		translator.load('/usr/share/simple-signer/lang/%s.qm' % langCode)
+		translator.load('/usr/share/simple-signer/lang/%s.qm' % getdefaultlocale()[0])
 	app.installTranslator(translator)
 
 	window = SimpleSignerMainWindow()
