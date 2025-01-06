@@ -39,8 +39,8 @@
     </message>
     <message>
         <location filename="../simple-signer.py" line="357"/>
-        <source>PDF File</source>
-        <translation>PDF-Datei</translation>
+        <source>PDF File(s)</source>
+        <translation>PDF-Datei(en)</translation>
     </message>
     <message>
         <location filename="../simple-signer.py" line="284"/>
@@ -171,6 +171,11 @@
         <location filename="../simple-signer.py" line="411"/>
         <source>Save Filename for Signed PDF</source>
         <translation>Dateiname zum Speichern des signierten PDFs</translation>
+    </message>
+    <message>
+        <location filename="../simple-signer.py"/>
+        <source>Drag &amp; drop a file here...</source>
+        <translation>Datei per Drag &amp; Drop hierher ziehen...</translation>
     </message>
 </context>
 </TS>
