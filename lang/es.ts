@@ -14,9 +14,9 @@
         <translation>Firmar permite a múltiples usuarios colocar una firma digital en un documento.</translation>
     </message>
     <message>
-        <location filename="../simple_signer/simple_signer.py" line="81"/>
-        <source>Certifiy will place your signature on the document and lock it after that.</source>
-        <translation>Certificar colocará tu firma en el documento y lo bloqueará a continuación.</translation>
+        <location filename="../simple_signer/simple_signer.py" line="409"/>
+        <source>Certify will place your signature on the document and lock it after that.</source>
+        <translation>Certificar colocará su firma en el documento y lo bloqueará a continuación.</translation>
     </message>
     <message>
         <location filename="../simple_signer/simple_signer.py" line="96"/>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <location filename="../simple_signer/simple_signer.py" line="32"/>
-        <source>Drag and drop a file here...</source>
+        <source>Drag &amp; drop a file here...</source>
         <translation>Arrastre y Suelte un fichero aquí...</translation>
     </message>
     <message>
@@ -187,26 +187,6 @@
         <location filename="../simple_signer/simple_signer.py" line="324"/>
         <source>PDF Folder</source>
         <translation>Directorio PDF</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="409"/>
-        <source>Certify will place your signature on the document and lock it after that.</source>
-        <translation>Certificar colocará su firma en el documento y lo bloqueará a continuación.</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="702"/>
-        <source>Select PDF Folder</source>
-        <translation>Seleccione un Directorio PDF</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="712"/>
-        <source>Please select a folder</source>
-        <translation>Por favor, seleccione un directorio</translation>
-    </message>
-    <message>
-        <location filename="../simple_signer/simple_signer.py" line="720"/>
-        <source>No PDF files found in the selected folder</source>
-        <translation>No se han encontrado ficheros PDF en el directorio seleccionado</translation>
     </message>
 </context>
 </TS>
