@@ -30,7 +30,7 @@ class FileDropLineEdit(QLineEdit):
         super().__init__(parent)
         self.setAcceptDrops(True)
         self.setPlaceholderText(QApplication.translate('SimpleSigner','Drag and drop a file here...'))
-
+        
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
@@ -44,7 +44,7 @@ class FileDropLineEdit(QLineEdit):
             event.acceptProposedAction()
         else:
             event.ignore()
-
+        
 class SimpleSignerAboutWindow(QDialog):
 	def __init__(self, *args, **kwargs):
 		super(SimpleSignerAboutWindow, self).__init__(*args, **kwargs)
