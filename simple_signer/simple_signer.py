@@ -25,7 +25,6 @@ if os.environ.get('QT_QPA_PLATFORMTHEME') == 'qt5ct':
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from locale import getlocale
 
 
 class SimpleSignerAboutWindow(QDialog):
@@ -568,15 +567,14 @@ class SimpleSignerMainWindow(QMainWindow):
 def get_os_language():
     if os.name == 'nt':
         windll = ctypes.windll.kernel32
-        windll.GetUserDefaultUILanguage()
-        return locale.windows_locale[ windll.GetUserDefaultUILanguage() ]
+        return locale.windows_locale[ windll.GetUserDefaultUILanguage() ][0:2]
     else:
-        return os.environ['LANG']
+        return locale.getlocale()[0][0:2]
 
 def main():
 	app = QApplication(sys.argv)
 	translator = QTranslator(app)
-	langCode = get_os_language()[0:2]
+	langCode = get_os_language()
 	if getattr(sys, 'frozen', False):
 		translator.load(os.path.join(sys._MEIPASS, 'lang/%s.qm' % langCode))
 	elif os.path.isdir('lang'):
