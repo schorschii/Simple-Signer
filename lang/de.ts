@@ -99,7 +99,7 @@
     </message>
     <message>
         <location filename="../simple-signer.py" line="304"/>
-        <source>Certifiy will place your signature on the document and lock it after that.</source>
+        <source>Certify will place your signature on the document and lock it after that.</source>
         <translation>Beim Zertifizieren wird ihre Unterschrift auf dem Dokument platziert und danach gesperrt.</translation>
     </message>
     <message>
