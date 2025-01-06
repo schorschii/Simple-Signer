@@ -36,7 +36,7 @@ class FileDropLineEdit(QLineEdit):
             event.acceptProposedAction()
         else:
             event.ignore()
-
+            
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
             file_path = event.mimeData().urls()[0].toLocalFile()
@@ -44,7 +44,7 @@ class FileDropLineEdit(QLineEdit):
             event.acceptProposedAction()
         else:
             event.ignore()
-        
+
 class SimpleSignerAboutWindow(QDialog):
 	def __init__(self, *args, **kwargs):
 		super(SimpleSignerAboutWindow, self).__init__(*args, **kwargs)
