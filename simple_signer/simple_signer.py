@@ -22,9 +22,9 @@ from endesive.pdf import cms
 # selecting files from network shares using QFileDialog (on linux)
 if os.environ.get('QT_QPA_PLATFORMTHEME') == 'qt5ct':
 	os.environ['QT_QPA_PLATFORMTHEME'] = 'gtk2'
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 
 class FileDropLineEdit(QLineEdit):
 	def __init__(self, parent=None):
@@ -73,7 +73,7 @@ class SimpleSignerAboutWindow(QDialog):
 		self.InitUI()
 
 	def InitUI(self):
-		self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+		self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
 		self.buttonBox.accepted.connect(self.accept)
 
 		self.layout = QVBoxLayout(self)
@@ -81,7 +81,7 @@ class SimpleSignerAboutWindow(QDialog):
 		labelAppName = QLabel(self)
 		labelAppName.setText(__title__ + ' v' + __version__)
 		labelAppName.setStyleSheet('font-weight:bold')
-		labelAppName.setAlignment(Qt.AlignCenter)
+		labelAppName.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.layout.addWidget(labelAppName)
 
 		labelCopyright = QLabel(self)
@@ -96,7 +96,7 @@ class SimpleSignerAboutWindow(QDialog):
 			'<br>'
 		)
 		labelCopyright.setOpenExternalLinks(True)
-		labelCopyright.setAlignment(Qt.AlignCenter)
+		labelCopyright.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.layout.addWidget(labelCopyright)
 
 		labelDescription = QLabel(self)
@@ -124,7 +124,7 @@ class SimpleSignerPreview(QLabel):
 
 	def mousePressEvent(self, event):
 		self.origin = event.pos()
-		if(self.rubberBand == None): self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
+		if(self.rubberBand == None): self.rubberBand = QRubberBand(QRubberBand.Shape.Rectangle, self)
 		self.rubberBand.setGeometry(QRect(self.origin, QSize()))
 		self.rubberBand.show()
 
@@ -175,7 +175,7 @@ class SimpleSignerPreviewWindow(QDialog):
 
 		self.lblPageView = SimpleSignerPreview()
 		self.lblPageView.setScaledContents(True)
-		self.lblPageView.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.lblPageView.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 		self.lblPageView.setPixmap(self.pymupixmap2qpixmap(self.pdfDocument[0].get_pixmap()))
 		grid.addWidget(self.lblPageView, 2, 0)
 
@@ -315,7 +315,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.lblPassword = QLabel(QApplication.translate('SimpleSigner', 'Certificate Password'))
 		grid.addWidget(self.lblPassword, 4, 0)
 		self.txtCertPassword = QLineEdit()
-		self.txtCertPassword.setEchoMode(QLineEdit.Password)
+		self.txtCertPassword.setEchoMode(QLineEdit.EchoMode.Password)
 		self.txtCertPassword.returnPressed.connect(self.OnReturnPressed)
 		grid.addWidget(self.txtCertPassword, 5, 0)
 
@@ -329,8 +329,8 @@ class SimpleSignerMainWindow(QMainWindow):
 		grid.addWidget(self.btnChooseStampPath, 7, 1)
 
 		line = QFrame()
-		line.setFrameShape(QFrame.HLine)
-		line.setFrameShadow(QFrame.Sunken)
+		line.setFrameShape(QFrame.Shape.HLine)
+		line.setFrameShadow(QFrame.Shadow.Sunken)
 		grid.addWidget(line, 8, 0)
 
 		grid2 = QGridLayout()
@@ -409,7 +409,7 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def OnOpenAboutDialog(self, e):
 		dlg = SimpleSignerAboutWindow(self)
-		dlg.exec_()
+		dlg.exec()
 
 	def OnClickChoosePdfPath(self, e):
 		fileNames = self.OpenFileDialog(QApplication.translate('SimpleSigner', 'PDF File'), 'PDF Files (*.pdf);;All Files (*.*)', True)
@@ -479,11 +479,11 @@ class SimpleSignerMainWindow(QMainWindow):
 			# check certificate
 			if(p12Data[1] != None and p12Data[1].not_valid_after < datetime.datetime.now()):
 				msg = QMessageBox()
-				msg.setIcon(QMessageBox.Warning)
+				msg.setIcon(QMessageBox.Icon.Warning)
 				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
 				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
-				msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-				if(msg.exec_() == QMessageBox.Cancel): return
+				msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+				if(msg.exec() == QMessageBox.StandardButton.Cancel): return
 
 			# get source path
 			for pdfPath in self.txtPdfPath.toPlainText().split("\n"):
@@ -513,7 +513,7 @@ class SimpleSignerMainWindow(QMainWindow):
 					if(stampInfo == None):
 						# show dialog to draw stamp rect
 						dlg = SimpleSignerPreviewWindow(self, pdfPath)
-						dlg.exec_()
+						dlg.exec()
 						if(dlg.stampRect == None or dlg.stampPage == None): return
 						print('You can create a config file (*.stampinfo) with the following content to automate the signature process: ', json.dumps({
 							'rect': dlg.stampRect,
@@ -558,11 +558,11 @@ class SimpleSignerMainWindow(QMainWindow):
 			# error message
 			traceback.print_exc()
 			msg = QMessageBox()
-			msg.setIcon(QMessageBox.Critical)
+			msg.setIcon(QMessageBox.Icon.Critical)
 			msg.setWindowTitle('😕')
 			msg.setText(str(type(e))+': '+str(e))
-			msg.setStandardButtons(QMessageBox.Ok)
-			retval = msg.exec_()
+			msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+			retval = msg.exec()
 
 	def DoSign(self, pdfPath, dct, p12Data):
 		try:
@@ -579,25 +579,25 @@ class SimpleSignerMainWindow(QMainWindow):
 
 				# success message
 				msg = QMessageBox()
-				msg.setIcon(QMessageBox.Information)
+				msg.setIcon(QMessageBox.Icon.Information)
 				msg.setWindowTitle('😇')
 				msg.setText(QApplication.translate('SimpleSigner', 'Successfully saved as »%s«.') % self.signedPdfPath)
-				msg.setStandardButtons(QMessageBox.Ok)
-				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Directory'), QMessageBox.ActionRole)
+				msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Directory'), QMessageBox.ButtonRole.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSignedInFileManager)
-				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Signed PDF'), QMessageBox.ActionRole)
+				btnOpen = msg.addButton(QApplication.translate('SimpleSigner', 'Open Signed PDF'), QMessageBox.ButtonRole.ActionRole)
 				btnOpen.clicked.connect(self.OnClickOpenSigned)
-				retval = msg.exec_()
+				retval = msg.exec()
 
 		except Exception as e:
 			# error message
 			traceback.print_exc()
 			msg = QMessageBox()
-			msg.setIcon(QMessageBox.Critical)
+			msg.setIcon(QMessageBox.Icon.Critical)
 			msg.setWindowTitle('😕')
 			msg.setText(str(type(e))+': '+str(e))
-			msg.setStandardButtons(QMessageBox.Ok)
-			retval = msg.exec_()
+			msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+			retval = msg.exec()
 
 	def getDefaultSignedPdfFileName(self, originalFileName):
 		if originalFileName.lower().endswith('.pdf'):
@@ -630,4 +630,4 @@ def main():
 	window = SimpleSignerMainWindow()
 	window.show()
 
-	sys.exit(app.exec_())
+	sys.exit(app.exec())
