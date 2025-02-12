@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Simple Signer
-Exec=/usr/bin/simple-signer
+Exec=/usr/bin/simple-signer %U
 Type=Application
 Comment=Sign PDF files
 Icon=application-pgp-signature
