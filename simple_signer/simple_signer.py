@@ -477,11 +477,11 @@ class SimpleSignerMainWindow(QMainWindow):
 			p12Data = pkcs12.load_key_and_certificates(certData, str.encode(self.txtCertPassword.text()), backends.default_backend())
 
 			# check certificate
-			if(p12Data[1] != None and p12Data[1].not_valid_after < datetime.datetime.now()):
+			if(p12Data[1] != None and p12Data[1].not_valid_after_utc < datetime.datetime.now(datetime.timezone.utc)):
 				msg = QMessageBox()
 				msg.setIcon(QMessageBox.Icon.Warning)
 				msg.setWindowTitle(QApplication.translate('SimpleSigner', 'Certificate Warning'))
-				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after))
+				msg.setText(QApplication.translate('SimpleSigner', 'Your certificate expired on %s. Continue?') % str(p12Data[1].not_valid_after_utc))
 				msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
 				if(msg.exec() == QMessageBox.StandardButton.Cancel): return
 
