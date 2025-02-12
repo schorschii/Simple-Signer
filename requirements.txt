@@ -2,7 +2,7 @@ endesive==2.17.1
 PyMuPDF
 
 # manually install newest revision as long as there is no new release on PyPI (see oscrypto#78)
-oscrypto @ git+https://github.com/wbond/oscrypto.git@1547f53
+oscrypto @ git+https://github.com/wbond/oscrypto.git@1547f535001ba568b239b8797465536759c742a3
 
 # needs: libjpeg-dev zlib1g-dev
 pillow<=11.1.0
