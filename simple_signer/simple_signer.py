@@ -61,8 +61,15 @@ class FileDropTextEdit(QTextEdit):
 
 	def dropEvent(self, event):
 		if event.mimeData().hasUrls():
+			oldFiles = self.toPlainText().split("\n")
+			newFiles = []
 			for arg in event.mimeData().urls():
-				self.setText(self.toPlainText()+arg.toLocalFile()+"\n")
+				if arg.toLocalFile() in oldFiles: continue
+				newFiles.append(arg.toLocalFile())
+			if len(newFiles):
+				if self.toPlainText() != '' and not self.toPlainText().endswith("\n"):
+					self.setText(self.toPlainText()+"\n")
+				self.setText(self.toPlainText()+"\n".join(newFiles)+"\n")
 			event.acceptProposedAction()
 		else:
 			event.ignore()
