@@ -294,6 +294,11 @@ class SimpleSignerMainWindow(QMainWindow):
 		chooseCertificateAction.triggered.connect(self.OnClickChooseCertPath)
 		fileMenu.addAction(chooseCertificateAction)
 		fileMenu.addSeparator()
+		self.askDestPathAction = QAction(QApplication.translate('SimpleSigner', 'Ask for destination path'), self)
+		self.askDestPathAction.setCheckable(True)
+		#self.askDestPathAction.triggered.connect(self.OnClickAskDestPath)
+		fileMenu.addAction(self.askDestPathAction)
+		fileMenu.addSeparator()
 		quitAction = QAction(QApplication.translate('SimpleSigner', '&Quit'), self)
 		quitAction.setShortcut('Ctrl+Q')
 		quitAction.triggered.connect(self.close)
@@ -389,6 +394,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			self.txtCertPath.setText(self.config['settings'].get('cert-path', ''))
 			self.txtStampPath.setText(self.config['settings'].get('stamp-path', ''))
 			self.chkDrawStamp.setChecked(True if self.config['settings'].get('draw-stamp','0')=='1' else False)
+			self.askDestPathAction.setChecked(True if self.config['settings'].get('ask-dest-path','1')=='1' else False)
 			self.signatureContact  = self.config['settings'].get('signature-contact', self.signatureContact)
 			self.signatureLocation = self.config['settings'].get('signature-location', self.signatureLocation)
 			self.signatureReason   = self.config['settings'].get('signature-reason', self.signatureReason)
@@ -411,6 +417,7 @@ class SimpleSignerMainWindow(QMainWindow):
 		self.config['settings']['cert-path'] = self.txtCertPath.text()
 		self.config['settings']['stamp-path'] = self.txtStampPath.text()
 		self.config['settings']['draw-stamp'] = '1' if self.chkDrawStamp.isChecked() else '0'
+		self.config['settings']['ask-dest-path'] = '1' if self.askDestPathAction.isChecked() else '0'
 		with open(self.CONFIG_PATH, 'w') as configfile:
 			self.config.write(configfile)
 		event.accept()
@@ -562,8 +569,15 @@ class SimpleSignerMainWindow(QMainWindow):
 					dct['signature'] = ''
 
 				# get target path
-				self.signedPdfPath = self.SaveFileDialog(QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'), self.getDefaultSignedPdfFileName(pdfPath), 'PDF Files (*.pdf);;All Files (*.*)')
-				if not self.signedPdfPath: return
+				if(self.askDestPathAction.isChecked()):
+					self.signedPdfPath = self.SaveFileDialog(
+						QApplication.translate('SimpleSigner', 'Save Filename for Signed PDF'),
+						self.getDefaultSignedPdfFileName(pdfPath),
+						'PDF Files (*.pdf);;All Files (*.*)'
+					)
+				else:
+					self.signedPdfPath = self.getDefaultSignedPdfFileName(pdfPath)
+				if(not self.signedPdfPath): return
 
 				# do it
 				self.DoSign(pdfPath, dct, p12Data)
@@ -614,16 +628,23 @@ class SimpleSignerMainWindow(QMainWindow):
 			retval = msg.exec()
 
 	def getDefaultSignedPdfFileName(self, originalFileName):
-		if originalFileName.lower().endswith('.pdf'):
-			return originalFileName[:-4]+'-signed.pdf'
-		else:
-			return originalFileName+'-signed.pdf'
+		counter = 0
+		while True:
+			strCounter = str(counter)
+			if(counter == 0): strCounter = ''
+			if(originalFileName.lower().endswith('.pdf')):
+				newName = originalFileName[:-4]+'-signed'+strCounter+'.pdf'
+			else:
+				newName = originalFileName+'-signed'+strCounter+'.pdf'
+			if(not os.path.exists(newName)):
+				return newName
+			counter += 1
 
 	def existsBinary(self, name):
 		return which(name) is not None
 
 def get_os_language():
-	if os.name == 'nt':
+	if(os.name == 'nt'):
 		windll = ctypes.windll.kernel32
 		return locale.windows_locale[ windll.GetUserDefaultUILanguage() ][0:2]
 	else:
@@ -633,7 +654,7 @@ def main():
 	app = QApplication(sys.argv)
 	translator = QTranslator(app)
 	langCode = get_os_language()
-	if getattr(sys, 'frozen', False):
+	if(getattr(sys, 'frozen', False)):
 		translator.load(os.path.join(sys._MEIPASS, 'lang/%s.qm' % langCode))
 	elif os.path.isdir('lang'):
 		translator.load('lang/%s.qm' % langCode)

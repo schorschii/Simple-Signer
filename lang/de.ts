@@ -177,5 +177,10 @@
         <source>Drag &amp; drop a file here...</source>
         <translation>Datei per Drag &amp; Drop hierher ziehen...</translation>
     </message>
+    <message>
+        <location filename="../simple-signer.py"/>
+        <source>Ask for destination path</source>
+        <translation>Nach Zielpfad fragen</translation>
+    </message>
 </context>
 </TS>
