@@ -74,6 +74,13 @@ class FileDropTextEdit(QTextEdit):
 		else:
 			event.ignore()
 
+		# fix for frozen cursor after drag&drop
+		mimeData = QMimeData()
+		mimeData.setText('')
+		dummyEvent = QDropEvent(event.position(), event.possibleActions(),
+				mimeData, event.buttons(), event.modifiers())
+		super(FileDropTextEdit, self).dropEvent(dummyEvent)
+
 class SimpleSignerAboutWindow(QDialog):
 	def __init__(self, *args, **kwargs):
 		super(SimpleSignerAboutWindow, self).__init__(*args, **kwargs)
