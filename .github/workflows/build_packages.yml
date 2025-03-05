@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install -y qttools5-dev-tools qtchooser $(cat installer/debian/simple-signer/DEBIAN/control | grep 'Depends' | cut -d: -f2 | sed -e 's/,/ /g' | sed -r 's/\([<>=.0-9]+\)//g')
+          sudo apt update && sudo apt install -y qttools5-dev-tools qtchooser $(cat installer/debian/simple-signer/DEBIAN/control | grep 'Depends' | cut -d: -f2 | sed -e 's/,/ /g' | sed -r 's/\([<>=.0-9]+\)//g')
 
       - name: Execute build
         run: cd installer/debian/ && ./build.sh
