@@ -75,7 +75,7 @@ signature-reason = Weil's geht!
 stamp-background = 255,255,255
 stamp-outline = 255,0,0
 stamp-border = 2
-stamp-labels = CN,DN,date,contact,reason,location
+stamp-text = Digitally Signed by $SUBJECT_CN$\n$SUBJECT_EMAIL$\n$TIMESTAMP$
 ```
 
 ## Development
