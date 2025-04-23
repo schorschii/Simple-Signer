@@ -659,7 +659,7 @@ class SimpleSignerMainWindow(QMainWindow):
 			except Exception as e:
 				subjectEmail = '?'
 
-		return (text.replace('\\\\n', '\n')
+		return (text.replace('\\n', '\n')
 			.replace('$TIMESTAMP$', datetime.datetime.now().strftime(self.dateFormat))
 			.replace('$SUBJECT_CN$', subjectCn)
 			.replace('$SUBJECT_EMAIL$', subjectEmail)
