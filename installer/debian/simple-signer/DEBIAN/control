@@ -3,7 +3,6 @@ Version: 1.6.1
 Section: base
 Priority: optional
 Architecture: all
-Depends: python3, python3-venv, python3-pip, python3-setuptools, python3-asn1crypto, python3-cryptography, python3-pil, swig, libjpeg-dev, zlib1g-dev, libxcb-cursor0, git
-Recommends: python3-pyqt6
+Depends: python3, python3-venv, python3-pip, python3-setuptools, python3-asn1crypto, python3-cryptography, python3-pyqt6, libxcb-cursor0, python3-pil, swig, libjpeg-dev, zlib1g-dev, git
 Maintainer: Georg Sieber <it@georg-sieber.de>
 Description: Sign and certity PDF files using a simple user interface.
