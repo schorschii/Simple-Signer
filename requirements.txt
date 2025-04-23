@@ -1,4 +1,4 @@
-endesive==2.18.2
+endesive==2.18.5
 PyMuPDF
 
 # manually install newest revision as long as there is no new release on PyPI (see oscrypto#78)

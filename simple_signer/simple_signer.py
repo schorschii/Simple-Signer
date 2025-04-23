@@ -14,14 +14,11 @@ import locale
 from pathlib import Path
 from shutil import which
 
+from cryptography import x509
 from cryptography.hazmat import backends
 from cryptography.hazmat.primitives.serialization import pkcs12
 from endesive.pdf import cms
 
-# gtk2 theme is more convenient when it comes to
-# selecting files from network shares using QFileDialog (on linux)
-if os.environ.get('QT_QPA_PLATFORMTHEME') == 'qt5ct':
-	os.environ['QT_QPA_PLATFORMTHEME'] = 'gtk2'
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
@@ -264,13 +261,16 @@ class SimpleSignerMainWindow(QMainWindow):
 	stampBackground   = [0.75, 0.80, 0.95]
 	stampOutline      = [0.20, 0.30, 0.50]
 	stampBorder       = 1
-	stampLabels       = ['CN', 'date']
+	stampText         = 'Digitally Signed by\n$SUBJECT_CN$\n$TIMESTAMP$'
+	dateFormat        = '%d.%m.%Y %H:%m'
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
 		self.InitUI()
 
 	def InitUI(self):
+		self.stampText = QApplication.translate('SimpleSigner', self.stampText)
+
 		# Menubar
 		mainMenu = self.menuBar()
 
@@ -404,8 +404,10 @@ class SimpleSignerMainWindow(QMainWindow):
 				self.stampOutline = self.strArrayToFloatArray(self.config['settings']['stamp-outline'].split(','))
 			if('stamp-border' in self.config['settings']):
 				self.stampBorder = int(self.config['settings']['stamp-border'])
-			if('stamp-labels' in self.config['settings']):
-				self.stampLabels = self.config['settings']['stamp-labels'].split(',')
+			if('stamp-text' in self.config['settings']):
+				self.stampText = self.config['settings']['stamp-text']
+			if('date-format' in self.config['settings']):
+				self.dateFormat = self.config['settings']['date-format']
 
 		# Defaults From Command Line
 		for arg in sys.argv[1:]:
@@ -531,6 +533,13 @@ class SimpleSignerMainWindow(QMainWindow):
 					if(self.txtStampPath.text().endswith('.stampinfo') and os.path.exists(self.txtStampPath.text())):
 						with open(self.txtStampPath.text()) as f: stampInfo = json.load(f)
 
+					defaultAppearance = {
+						'background': self.stampBackground,
+						'outline': self.stampOutline,
+						'border': self.stampBorder,
+						'labels': True,
+						'display': self.replaceStampPlaceholders(self.stampText, p12Data[1]),
+					}
 					if(stampInfo == None):
 						# show dialog to draw stamp rect
 						dlg = SimpleSignerPreviewWindow(self, pdfPath)
@@ -542,13 +551,7 @@ class SimpleSignerMainWindow(QMainWindow):
 						}))
 						dct['signaturebox'] = dlg.stampRect
 						dct['sigpage'] = dlg.stampPage
-						dct['signature_appearance'] = {
-							'background': self.stampBackground,
-							'outline': self.stampOutline,
-							'border': self.stampBorder,
-							'labels': True,
-							'display': self.stampLabels,
-						}
+						dct['signature_appearance'] = defaultAppearance
 						# use stamp image if given
 						if(os.path.exists(self.txtStampPath.text())):
 							dct['signature_appearance']['icon'] = self.txtStampPath.text()
@@ -557,13 +560,12 @@ class SimpleSignerMainWindow(QMainWindow):
 						print('Using .stampinfo: ', stampInfo)
 						dct['signaturebox'] = stampInfo['rect']
 						dct['sigpage'] = stampInfo['page'] if 'page' in stampInfo else '0'
-						dct['signature_appearance'] = stampInfo['signature_appearance'] if 'signature_appearance' in stampInfo else {
-							'background': self.stampBackground,
-							'outline': self.stampOutline,
-							'border': self.stampBorder,
-							'labels': True,
-							'display': self.stampLabels,
-						}
+						if('signature_appearance' in stampInfo):
+							if('display' in stampInfo['signature_appearance']):
+								stampInfo['signature_appearance']['display'] = self.replaceStampPlaceholders(stampInfo['signature_appearance']['display'])
+							dct['signature_appearance'] = stampInfo['signature_appearance']
+						else:
+							dct['signature_appearance'] = defaultAppearance
 
 				else:
 					dct['signature'] = ''
@@ -642,6 +644,26 @@ class SimpleSignerMainWindow(QMainWindow):
 
 	def existsBinary(self, name):
 		return which(name) is not None
+
+	def replaceStampPlaceholders(self, text, cert):
+		try:
+			subjectCn = str(cert.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)[0].value)
+		except Exception as e:
+			subjectCn = '?'
+		try:
+			subjectEmail = str(cert.subject.get_attributes_for_oid(x509.NameOID.EMAIL_ADDRESS)[0].value)
+		except Exception as e:
+			try:
+				ext = cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
+				subjectEmail = str(ext.value.get_values_for_type(x509.RFC822Name)[0])
+			except Exception as e:
+				subjectEmail = '?'
+
+		return (text.replace('\\\\n', '\n')
+			.replace('$TIMESTAMP$', datetime.datetime.now().strftime(self.dateFormat))
+			.replace('$SUBJECT_CN$', subjectCn)
+			.replace('$SUBJECT_EMAIL$', subjectEmail)
+		)
 
 def get_os_language():
 	if(os.name == 'nt'):

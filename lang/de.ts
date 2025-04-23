@@ -182,5 +182,10 @@
         <source>Ask for destination path</source>
         <translation>Nach Zielpfad fragen</translation>
     </message>
+    <message>
+        <location filename="../simple-signer.py"/>
+        <source>Digitally Signed by&#xA;$SUBJECT_CN$&#xA;$TIMESTAMP$</source>
+        <translation>Digital signiert von&#xA;$SUBJECT_CN$&#xA;$TIMESTAMP$</translation>
+    </message>
 </context>
 </TS>
