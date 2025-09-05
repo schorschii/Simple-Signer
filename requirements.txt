@@ -8,8 +8,8 @@ cryptography==44.0.2
 # needs: libjpeg-dev zlib1g-dev
 pillow<=11.1.0
 
-# Debian package note: since python3-pyqt5 is a build-dependency and --use-system-packages is set,
-# PyQt5 will not be installed in the venv. This is important because only the system-wide PyQt installation
+# Debian package note: since python3-pyqt6 is a build-dependency and --use-system-packages is set,
+# PyQt6 will not be installed in the venv. This is important because only the system-wide PyQt installation
 # enables us to use the system theme and avoids unnessesary duplicate installation of the Qt libs on the system.
 # needs: libxcb-cursor0
 PyQt6
