@@ -262,7 +262,7 @@ class SimpleSignerMainWindow(QMainWindow):
 	stampOutline      = [0.20, 0.30, 0.50]
 	stampBorder       = 1
 	stampText         = 'Digitally Signed by\n$SUBJECT_CN$\n$TIMESTAMP$'
-	dateFormat        = '%d.%m.%Y %H:%m'
+	dateFormat        = '%d.%m.%Y %H:%M'
 
 	def __init__(self):
 		super(SimpleSignerMainWindow, self).__init__()
