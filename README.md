@@ -51,10 +51,12 @@ then
 - Enter the path to your certificate file and your certificate's passphrase, then click:
   - **Sign**: allows multiple users to place their signature
   - **Certify**: places your signature and locks the document - after that, no further signature can be added
-  - **Draw Stamp**: you can optionally place a visual stamp on the document which is linked to your signature
+  - **Draw Stamp**: you can optionally place a visual stamp on the document which is linked to your signature. If the field for the configuration file  is left blank, a visual tool to select the position of the signature will be used.
 
 ## Stamp Manifest File
 Simple Signer allows to load a stamp configuration file (extension `.stampinfo` with JSON content), which contains the position and size of the stamp to draw. This feature is intended for visually impaired people who cannot draw the stamp rect themselves. Another person can create this stamp configuration file in advance, so they can sign documents of a certain type with without further help. The resulting stamp config is shown on the command line when drawing the stamp rect manually. This config can then simply be copied into a `.stampinfo` file for further use.
+
+`rect` is `[x1, y1, x2, y2]` in points (pt), measured from the bottom-left corner of the page. `page` is the page in which the signature should be placed, starting at `0`.
 
 Example `.stampinfo` file:
 ```
